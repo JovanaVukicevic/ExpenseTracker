@@ -1,0 +1,8 @@
+{
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableMSBuildLoadProjectsOnDemand": false,
+    "omnisharp.useGlobalMono": "always",
+    "csharp.format.enable": true,
+    "C_Cpp.errorSquiggles": "Enabled"
+}
