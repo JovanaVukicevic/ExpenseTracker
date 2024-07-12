@@ -9,7 +9,10 @@
       "ExpenseTracker.API/1.0.0": {
         "dependencies": {
           "CSharpFunctionalExtensions": "2.42.5",
+          "CronScheduler.AspNetCore": "3.1.0",
+          "CronScheduler.Extensions": "3.1.0",
           "ExpenseTracker.Service": "1.0.0",
+          "Iminetsoft.CronNET": "8.0.2",
           "Microsoft.AspNetCore.Authentication": "2.2.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.6",
           "Microsoft.AspNetCore.Authorization": "8.0.6",
@@ -68,6 +71,68 @@
           }
         }
       },
+      "Bet.Extensions/4.0.1": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "System.Threading.Channels": "6.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Bet.Extensions.dll": {
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.0.1.0"
+          }
+        }
+      },
+      "Bet.Extensions.Options/4.0.1": {
+        "dependencies": {
+          "Bet.Extensions": "4.0.1",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "8.0.0",
+          "Microsoft.Extensions.Options.DataAnnotations": "3.1.21"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Bet.Extensions.Options.dll": {
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.0.1.0"
+          }
+        }
+      },
+      "Cronos/0.7.1": {
+        "runtime": {
+          "lib/netstandard2.0/Cronos.dll": {
+            "assemblyVersion": "0.7.1.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "CronScheduler.AspNetCore/3.1.0": {
+        "dependencies": {
+          "CronScheduler.Extensions": "3.1.0"
+        },
+        "runtime": {
+          "lib/net6.0/CronScheduler.AspNetCore.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.0.0"
+          }
+        }
+      },
+      "CronScheduler.Extensions/3.1.0": {
+        "dependencies": {
+          "Bet.Extensions.Options": "4.0.1",
+          "Cronos": "0.7.1",
+          "Microsoft.Extensions.DependencyInjection": "8.0.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "8.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/CronScheduler.Extensions.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.0.0"
+          }
+        }
+      },
       "CSharpFunctionalExtensions/2.42.5": {
         "runtime": {
           "lib/net6.0/CSharpFunctionalExtensions.dll": {
@@ -81,6 +146,14 @@
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
+          }
+        }
+      },
+      "Iminetsoft.CronNET/8.0.2": {
+        "runtime": {
+          "lib/net8.0/CronNET.dll": {
+            "assemblyVersion": "1.0.0.1",
+            "fileVersion": "1.0.0.1"
           }
         }
       },
@@ -899,6 +972,12 @@
           "Microsoft.Extensions.Primitives": "8.0.0"
         }
       },
+      "Microsoft.Extensions.Options.DataAnnotations/3.1.21": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Options": "8.0.2"
+        }
+      },
       "Microsoft.Extensions.Primitives/8.0.0": {},
       "Microsoft.Extensions.WebEncoders/2.2.0": {
         "dependencies": {
@@ -1520,6 +1599,41 @@
       "path": "azure.identity/1.10.3",
       "hashPath": "azure.identity.1.10.3.nupkg.sha512"
     },
+    "Bet.Extensions/4.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a/Oqeym+lta9V3N1jcY/fduDI5XymvZow+pH5Wt6DFyiRG0KBNRhrYydf2I7i+GBk8lM4+i30/BE2pisa/MSVg==",
+      "path": "bet.extensions/4.0.1",
+      "hashPath": "bet.extensions.4.0.1.nupkg.sha512"
+    },
+    "Bet.Extensions.Options/4.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ei1DzS760hmWhXVBee+LIWjzXHUGvAtyG7Ns1hT/UNsd1VUSHB8Duw7JhNm5qhkN2pNRLUsw/+qEoKRoPl66lg==",
+      "path": "bet.extensions.options/4.0.1",
+      "hashPath": "bet.extensions.options.4.0.1.nupkg.sha512"
+    },
+    "Cronos/0.7.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-aa2DY3qGBnwX7/jW4c17PyRlIeAtc5nYTlAPekc0113jcbBuz9vQkQaQ9NG+TNGlAj4esFxh8OuKUv4vmAODbw==",
+      "path": "cronos/0.7.1",
+      "hashPath": "cronos.0.7.1.nupkg.sha512"
+    },
+    "CronScheduler.AspNetCore/3.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-n0Q1SZLAPhmHggaCGMLcnP8gBvG4bIpyU5iPzeX2dGrhhxSEBt3UW94ViijUFzr8uYYiuZTYntWHenSIaqysvA==",
+      "path": "cronscheduler.aspnetcore/3.1.0",
+      "hashPath": "cronscheduler.aspnetcore.3.1.0.nupkg.sha512"
+    },
+    "CronScheduler.Extensions/3.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5incT98QP8zYz0jl+rVPfu01xRLG8kNLWc72BBMUW0Ha2ssTQsDTUuHw9q39f6eOKa4XH2BjEl+8gvUDboCgFA==",
+      "path": "cronscheduler.extensions/3.1.0",
+      "hashPath": "cronscheduler.extensions.3.1.0.nupkg.sha512"
+    },
     "CSharpFunctionalExtensions/2.42.5": {
       "type": "package",
       "serviceable": true,
@@ -1533,6 +1647,13 @@
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
+    },
+    "Iminetsoft.CronNET/8.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-35TKNwzNtkVqSNPp11Ncxyb79u4JtJMoWTCw+QjfMBxDaPOghQC+WaqAJKAUD+O+6q5mT+cjJpoO7bFI66T5Ag==",
+      "path": "iminetsoft.cronnet/8.0.2",
+      "hashPath": "iminetsoft.cronnet.8.0.2.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication/2.2.0": {
       "type": "package",
@@ -2030,6 +2151,13 @@
       "sha512": "sha512-0f4DMRqEd50zQh+UyJc+/HiBsZ3vhAQALgdkcQEalSH1L2isdC7Yj54M3cyo5e+BeO5fcBQ7Dxly8XiBBcvRgw==",
       "path": "microsoft.extensions.options.configurationextensions/8.0.0",
       "hashPath": "microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Options.DataAnnotations/3.1.21": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GkEwxufFbAjBDS9wPxyHwLECR00K6on+GkteIGY8z1S8Gzgy8pPZ5n7PuK1C2qkGOZr8rcp0C1UCfzD+dxl87A==",
+      "path": "microsoft.extensions.options.dataannotations/3.1.21",
+      "hashPath": "microsoft.extensions.options.dataannotations.3.1.21.nupkg.sha512"
     },
     "Microsoft.Extensions.Primitives/8.0.0": {
       "type": "package",

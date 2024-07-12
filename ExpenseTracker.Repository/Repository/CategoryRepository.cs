@@ -46,9 +46,9 @@ public class CategoryRepository : ICategoryRepository
         throw new NotImplementedException();
     }
 
-    public Category GetCategoryByName(int name)
+    public async Task<Category> GetCategoryByName(string name)
     {
-        throw new NotImplementedException();
+        return await _context.Categories.Where(c => c.Name == name).FirstOrDefaultAsync();
     }
     public async Task<int> UpdateCategory(Category c)
     {

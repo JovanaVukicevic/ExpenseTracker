@@ -26,6 +26,18 @@ public class ScheduledRepository : IScheduledRepository
         return true;
     }
 
+    public async Task<double> GetAllScheduledExpenseForAMonth(int month)
+    {
+        return await _context.Schedules.Where(s => s.Indicator == '+' && s.StartDate.Month == month).SumAsync(s => s.Amount);
+    }
+
+    public async Task<double> GetAllScheduledIncomeForAMonth(int month)
+    {
+        //     return await _context.Schedules.Where(s => s.StartDate.Month == month && s.Indicator == '+').Sum(s.Amount);
+        // 
+        return await _context.Schedules.Where(s => s.Indicator == '+' && s.StartDate.Month == month).SumAsync(s => s.Amount);
+    }
+
     public async Task<List<Scheduled>> GetAllScheduledTransactions()
     {
         return await _context.Schedules.ToListAsync();
@@ -40,6 +52,12 @@ public class ScheduledRepository : IScheduledRepository
     {
         return await _context.Schedules.Where(s => s.ID == id).FirstOrDefaultAsync();
     }
+
+    public async Task<double> GetScheduledExpensesOfACategory(int month, string categoryName)
+    {
+        return await _context.Schedules.Where(s => s.Indicator == '-' && s.StartDate.Month == month && s.CategoryName == categoryName).SumAsync(s => s.Amount);
+    }
+
     public bool ScheduledExistsId(int id)
     {
         throw new NotImplementedException();
@@ -51,4 +69,6 @@ public class ScheduledRepository : IScheduledRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+
 }

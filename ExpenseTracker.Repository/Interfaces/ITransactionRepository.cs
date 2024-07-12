@@ -14,6 +14,10 @@ namespace ExpenseTracker.Repository.Interfaces
 
         Task<List<Transaction>> GetAllTransactionsOfAnAccount(int userId);
 
+        Task<double> GetAllExpenseOfACategory(int month, string name);
+
+
+
 
 
 

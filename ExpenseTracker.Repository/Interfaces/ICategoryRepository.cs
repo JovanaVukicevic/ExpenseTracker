@@ -5,7 +5,7 @@ namespace ExpenseTracker.Repository.Interfaces
     public interface ICategoryRepository
     {
         Task<List<Category>> GetAllCategories();
-        Category GetCategoryByName(int name);
+        Task<Category> GetCategoryByName(string name);
         List<Category> GetCategoriesOfAType(char c);
         double GetBudgetCap(string name);
         bool CategoryExists(string name);

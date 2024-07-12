@@ -57,4 +57,9 @@ public class TransactionRepository : ITransactionRepository
     {
         return await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
     }
+
+    public async Task<double> GetAllExpenseOfACategory(int month, string name)
+    {
+        return await _context.Transactions.Where(t => t.Indicator == '-' && t.Date.Month == month && t.CategoryName == name).SumAsync(t => t.Amount);
+    }
 }

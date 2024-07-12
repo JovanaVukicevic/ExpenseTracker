@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using CronNET;
+using CronScheduler.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,9 +78,11 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IScheduledService, ScheduledService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<UserManager<User>>();
+builder.Services.AddHostedService<SchedulingTransactionService>();
 // builder.Services.AddScoped<SignInManager<User>>();
 
-
+//builder.Services.AddCronJob<CronJob>("* * * * *");
+//builder.Services.AddCronJob<AnotherCronJob>("*/2 * * * *");
 
 builder.Services.AddAuthentication(options =>
 {

@@ -187,6 +187,14 @@
               "target": "Package",
               "version": "[2.42.5, )"
             },
+            "CronScheduler.AspNetCore": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "CronScheduler.Extensions": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[8.0.6, )"
@@ -234,6 +242,10 @@
             "Microsoft.OpenApi": {
               "target": "Package",
               "version": "[1.6.15, )"
+            },
+            "NCrontab": {
+              "target": "Package",
+              "version": "[3.3.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

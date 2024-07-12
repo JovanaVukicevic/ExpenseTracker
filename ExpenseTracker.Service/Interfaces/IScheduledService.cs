@@ -19,5 +19,9 @@ namespace ExpenseTracker.Service.Interfaces
         public Task<Result> DeleteScheduledAsync(int id);
 
         public Task<Result> UpdateScheduledAsync(Scheduled scheduled);
+
+        public Task<Scheduled> GetScheduledByIDAsync(int id);
+
+
     }
 }

@@ -10,9 +10,13 @@ namespace ExpenseTracker.Service.Services;
 public class ScheduledService : IScheduledService
 {
     private readonly IScheduledRepository _scheduledRepository;
-    public ScheduledService(IScheduledRepository scheduledRepository)
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IAccountRepository _accountRepository;
+    public ScheduledService(IScheduledRepository scheduledRepository, ICategoryRepository categoryRepository, IAccountRepository accountRepository)
     {
         _scheduledRepository = scheduledRepository;
+        _categoryRepository = categoryRepository;
+        _accountRepository = accountRepository;
     }
 
     public async Task<Result> CreateScheduledIncomeAsync(ScheduledDto scheduledDto)
@@ -31,6 +35,26 @@ public class ScheduledService : IScheduledService
     {
         Scheduled scheduled = FromDtoToScheduled(scheduledDto);
         scheduled.Indicator = '-';
+        double sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.Month);
+        double sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.Month);
+        if (scheduledDto.StartDate.Month == DateTime.Now.Month)
+        {
+            Account account = await _accountRepository.GetAccountByID(scheduledDto.AccountID);
+            if (sumIncome + account.Balance < sumExpense + scheduledDto.Amount)
+            {
+                return Result.Failure<string>("There is not enough funds for this transaction");
+            }
+        }
+        if (sumIncome < sumExpense + scheduledDto.Amount && scheduledDto.StartDate.Month != DateTime.Now.Month)
+        {
+            return Result.Failure<string>("There is not enough funds for this transaction");
+        }
+        double sumCategory = await _scheduledRepository.GetScheduledExpensesOfACategory(scheduledDto.StartDate.Month, scheduledDto.CategoryName);
+        Category category = await _categoryRepository.GetCategoryByName(scheduledDto.CategoryName);
+        if (sumCategory + scheduledDto.Amount > category.BudgetCap)
+        {
+            return Result.Failure<string>("Your transaction is passing the budget cap of a category");
+        }
         var result = await _scheduledRepository.CreateSchedule(scheduled);
         if (!result)
         {
@@ -82,19 +106,23 @@ public class ScheduledService : IScheduledService
 
     public async Task<List<ScheduledDto>> GetAllScheduledTransactionsAsync()
     {
-        List<Scheduled> scheduled = await _scheduledRepository.GetAllScheduledTransactions();
-        if (scheduled == null)
+        List<Scheduled> scheduledTransactions = await _scheduledRepository.GetAllScheduledTransactions();
+
+        List<ScheduledDto> scheduledDtos = [];
+        foreach (Scheduled scheduledTransaction in scheduledTransactions)
         {
-            return null;
+            scheduledDtos.Add(FromScheduledToDto(scheduledTransaction));
+            // scheduledDtos.Add(scheduledTransaction.ToDto());
         }
-        List<ScheduledDto> schedDto = [];
-        foreach (Scheduled s in scheduled)
-        {
-            schedDto.Add(FromScheduledToDto(s));
-        }
-        return schedDto;
+        return scheduledDtos;
     }
 
+    public async Task<Scheduled> GetScheduledByIDAsync(int id)
+    {
+        return await _scheduledRepository.GetScheduledByID(id);
+
+
+    }
     public async Task<Result> DeleteScheduledAsync(int id)
     {
         Scheduled trans = await _scheduledRepository.GetScheduledByID(id);

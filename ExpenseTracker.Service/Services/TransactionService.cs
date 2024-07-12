@@ -3,6 +3,7 @@ using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
 using CSharpFunctionalExtensions;
+using System.Diagnostics;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -12,10 +13,13 @@ public class TransactionService : ITransactionService
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
 
-    public TransactionService(ITransactionRepository transactionRepository, IAccountRepository accountRepository)
+    private readonly ICategoryRepository _categoryRepository;
+
+    public TransactionService(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository)
     {
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
+        _categoryRepository = categoryRepository;
     }
 
 
@@ -87,15 +91,26 @@ public class TransactionService : ITransactionService
         Transaction transaction = FromDtoToTransaction(transactionDto);
         transaction.Indicator = '-';
         transaction.Date = DateTime.Now;
+        double sumExpense = await _transactionRepository.GetAllExpenseOfACategory(transaction.Date.Month, transaction.CategoryName);
+        Category category = await _categoryRepository.GetCategoryByName(transaction.CategoryName);
+        if (sumExpense + transaction.Amount > category.BudgetCap && category.BudgetCap != 0)
+        {
+            return Result.Failure<string>("You are passing a budget cap of a category");
+        }
+        Account account = await _accountRepository.GetAccountByID(transactionDto.AccountID);
+        if (account.Balance < transaction.Amount)
+        {
+            return Result.Failure<string>("There's not enough funds on your account");
+        }
         var result = await _transactionRepository.CreateTransaction(transaction);
         if (!result)
         {
-            return Result.Failure<string>("Something went wrong while saving an income!");
+            return Result.Failure<string>("Something went wrong while saving an expense!");
         }
-        Account account = await _accountRepository.GetAccountByID(transactionDto.AccountID);
+        //Account account = await _accountRepository.GetAccountByID(transactionDto.AccountID);
         account.Balance = account.Balance - transactionDto.Amount;
         var result1 = await _accountRepository.UpdateAccount(account);
-        return Result.Success<string>("Income is saved");
+        return Result.Success<string>("Expense is saved");
     }
 
     public async Task<Result> DeleteTransaction(int id)

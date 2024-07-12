@@ -316,3 +316,9 @@ C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\obj\Debug
 C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\obj\Debug\net8.0\ExpenseT.4CDC188D.Up2Date
 C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\obj\Debug\net8.0\ExpenseTracker.API.genruntimeconfig.cache
 C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\obj\Debug\net8.0\ref\ExpenseTracker.API.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\Bet.Extensions.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\Bet.Extensions.Options.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\Cronos.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\CronScheduler.AspNetCore.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\CronScheduler.Extensions.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\CronNET.dll

@@ -5,7 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CronScheduler.AspNetCore" Version="3.1.0" />
+    <PackageReference Include="CronScheduler.Extensions" Version="3.1.0" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5" />
+    <PackageReference Include="Iminetsoft.CronNET" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.6" />
@@ -25,6 +28,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.6.2" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.6.15" />
+    <PackageReference Include="NCrontab" Version="3.3.3" />
+    <PackageReference Include="NCrontab.Signed" Version="3.3.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.2" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />

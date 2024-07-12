@@ -46,6 +46,96 @@
           }
         }
       },
+      "Bet.Extensions/4.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.21",
+          "Microsoft.Extensions.Primitives": "3.1.21",
+          "System.Threading.Channels": "4.7.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/Bet.Extensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Bet.Extensions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Bet.Extensions.Options/4.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Bet.Extensions": "4.0.1",
+          "Microsoft.Extensions.Options": "3.1.21",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "3.1.21",
+          "Microsoft.Extensions.Options.DataAnnotations": "3.1.21"
+        },
+        "compile": {
+          "lib/netstandard2.0/Bet.Extensions.Options.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Bet.Extensions.Options.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Cronos/0.7.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Cronos.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/Cronos.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "CronScheduler.AspNetCore/3.1.0": {
+        "type": "package",
+        "dependencies": {
+          "CronScheduler.Extensions": "3.1.0"
+        },
+        "compile": {
+          "lib/net6.0/CronScheduler.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/CronScheduler.AspNetCore.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "CronScheduler.Extensions/3.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Bet.Extensions.Options": "4.0.1",
+          "Cronos": "0.7.1",
+          "Microsoft.Extensions.DependencyInjection": "6.0.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "6.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.1",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/CronScheduler.Extensions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/CronScheduler.Extensions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "CSharpFunctionalExtensions/2.42.5": {
         "type": "package",
         "compile": {
@@ -70,6 +160,15 @@
           "lib/net6.0/Humanizer.dll": {
             "related": ".xml"
           }
+        }
+      },
+      "Iminetsoft.CronNET/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/CronNET.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/CronNET.dll": {}
         }
       },
       "Microsoft.AspNetCore.Authentication/2.2.0": {
@@ -1586,6 +1685,23 @@
           "buildTransitive/net6.0/_._": {}
         }
       },
+      "Microsoft.Extensions.Options.DataAnnotations/3.1.21": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.21",
+          "Microsoft.Extensions.Options": "3.1.21"
+        },
+        "compile": {
+          "lib/netcoreapp3.1/Microsoft.Extensions.Options.DataAnnotations.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Microsoft.Extensions.Options.DataAnnotations.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Extensions.Primitives/8.0.0": {
         "type": "package",
         "compile": {
@@ -1867,6 +1983,32 @@
         },
         "runtime": {
           "lib/netstandard2.0/Mono.TextTemplating.dll": {}
+        }
+      },
+      "NCrontab/3.3.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/NCrontab.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/NCrontab.dll": {
+            "related": ".pdb"
+          }
+        }
+      },
+      "NCrontab.Signed/3.3.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/NCrontab.Signed.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/NCrontab.Signed.dll": {
+            "related": ".pdb"
+          }
         }
       },
       "Newtonsoft.Json/13.0.1": {
@@ -2728,7 +2870,7 @@
       "System.Threading.Channels/6.0.0": {
         "type": "package",
         "compile": {
-          "lib/net6.0/_._": {
+          "lib/net6.0/System.Threading.Channels.dll": {
             "related": ".xml"
           }
         },
@@ -2818,6 +2960,8 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "CSharpFunctionalExtensions": "2.42.5",
+          "CronScheduler.AspNetCore": "3.1.0",
+          "CronScheduler.Extensions": "3.1.0",
           "ExpenseTracker.Repository": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.6",
           "Microsoft.AspNetCore.Authorization": "8.0.6",
@@ -2828,6 +2972,7 @@
           "Microsoft.Extensions.DependencyInjection": "8.0.0",
           "Microsoft.IdentityModel.Tokens": "7.6.2",
           "Microsoft.OpenApi": "1.6.15",
+          "NCrontab": "3.3.3",
           "Swashbuckle.AspNetCore": "6.4.0",
           "System.IdentityModel.Tokens.Jwt": "7.6.2",
           "System.Security.Claims": "4.3.0",
@@ -2887,6 +3032,87 @@
         "lib/netstandard2.0/Azure.Identity.xml"
       ]
     },
+    "Bet.Extensions/4.0.1": {
+      "sha512": "a/Oqeym+lta9V3N1jcY/fduDI5XymvZow+pH5Wt6DFyiRG0KBNRhrYydf2I7i+GBk8lM4+i30/BE2pisa/MSVg==",
+      "type": "package",
+      "path": "bet.extensions/4.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bet.extensions.4.0.1.nupkg.sha512",
+        "bet.extensions.nuspec",
+        "icon.png",
+        "lib/netstandard2.0/Bet.Extensions.dll",
+        "lib/netstandard2.0/Bet.Extensions.xml"
+      ]
+    },
+    "Bet.Extensions.Options/4.0.1": {
+      "sha512": "Ei1DzS760hmWhXVBee+LIWjzXHUGvAtyG7Ns1hT/UNsd1VUSHB8Duw7JhNm5qhkN2pNRLUsw/+qEoKRoPl66lg==",
+      "type": "package",
+      "path": "bet.extensions.options/4.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "bet.extensions.options.4.0.1.nupkg.sha512",
+        "bet.extensions.options.nuspec",
+        "icon.png",
+        "lib/netstandard2.0/Bet.Extensions.Options.dll",
+        "lib/netstandard2.0/Bet.Extensions.Options.xml"
+      ]
+    },
+    "Cronos/0.7.1": {
+      "sha512": "aa2DY3qGBnwX7/jW4c17PyRlIeAtc5nYTlAPekc0113jcbBuz9vQkQaQ9NG+TNGlAj4esFxh8OuKUv4vmAODbw==",
+      "type": "package",
+      "path": "cronos/0.7.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "cronos.0.7.1.nupkg.sha512",
+        "cronos.nuspec",
+        "lib/net40/Cronos.dll",
+        "lib/net40/Cronos.xml",
+        "lib/net45/Cronos.dll",
+        "lib/net45/Cronos.xml",
+        "lib/netstandard1.0/Cronos.dll",
+        "lib/netstandard1.0/Cronos.xml",
+        "lib/netstandard2.0/Cronos.dll",
+        "lib/netstandard2.0/Cronos.xml"
+      ]
+    },
+    "CronScheduler.AspNetCore/3.1.0": {
+      "sha512": "n0Q1SZLAPhmHggaCGMLcnP8gBvG4bIpyU5iPzeX2dGrhhxSEBt3UW94ViijUFzr8uYYiuZTYntWHenSIaqysvA==",
+      "type": "package",
+      "path": "cronscheduler.aspnetcore/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "cronscheduler.aspnetcore.3.1.0.nupkg.sha512",
+        "cronscheduler.aspnetcore.nuspec",
+        "icon.png",
+        "lib/net6.0/CronScheduler.AspNetCore.dll",
+        "lib/net6.0/CronScheduler.AspNetCore.xml",
+        "lib/netstandard2.0/CronScheduler.AspNetCore.dll",
+        "lib/netstandard2.0/CronScheduler.AspNetCore.xml"
+      ]
+    },
+    "CronScheduler.Extensions/3.1.0": {
+      "sha512": "5incT98QP8zYz0jl+rVPfu01xRLG8kNLWc72BBMUW0Ha2ssTQsDTUuHw9q39f6eOKa4XH2BjEl+8gvUDboCgFA==",
+      "type": "package",
+      "path": "cronscheduler.extensions/3.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "cronscheduler.extensions.3.1.0.nupkg.sha512",
+        "cronscheduler.extensions.nuspec",
+        "icon.png",
+        "lib/net6.0/CronScheduler.Extensions.dll",
+        "lib/net6.0/CronScheduler.Extensions.xml",
+        "lib/netstandard2.0/CronScheduler.Extensions.dll",
+        "lib/netstandard2.0/CronScheduler.Extensions.xml"
+      ]
+    },
     "CSharpFunctionalExtensions/2.42.5": {
       "sha512": "Do9Q7Nyfx2G4HRt96aB6yoP5Z9ic3jqBHLrf35tULzsWlFoBlkQZT62aXCiv7UmVmF56OUR+a3JoSSs140hfHQ==",
       "type": "package",
@@ -2932,6 +3158,26 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "Iminetsoft.CronNET/8.0.2": {
+      "sha512": "35TKNwzNtkVqSNPp11Ncxyb79u4JtJMoWTCw+QjfMBxDaPOghQC+WaqAJKAUD+O+6q5mT+cjJpoO7bFI66T5Ag==",
+      "type": "package",
+      "path": "iminetsoft.cronnet/8.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Readme.md",
+        "iminetsoft.cronnet.8.0.2.nupkg.sha512",
+        "iminetsoft.cronnet.nuspec",
+        "iminetsoft.png",
+        "lib/net40/CronNET.dll",
+        "lib/net48/CronNET.dll",
+        "lib/net5.0/CronNET.dll",
+        "lib/net6.0/CronNET.dll",
+        "lib/net7.0/CronNET.dll",
+        "lib/net8.0/CronNET.dll",
+        "lib/netstandard2.0/CronNET.dll"
       ]
     },
     "Microsoft.AspNetCore.Authentication/2.2.0": {
@@ -5204,6 +5450,22 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "Microsoft.Extensions.Options.DataAnnotations/3.1.21": {
+      "sha512": "GkEwxufFbAjBDS9wPxyHwLECR00K6on+GkteIGY8z1S8Gzgy8pPZ5n7PuK1C2qkGOZr8rcp0C1UCfzD+dxl87A==",
+      "type": "package",
+      "path": "microsoft.extensions.options.dataannotations/3.1.21",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "lib/netcoreapp3.1/Microsoft.Extensions.Options.DataAnnotations.dll",
+        "lib/netcoreapp3.1/Microsoft.Extensions.Options.DataAnnotations.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.Options.DataAnnotations.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Options.DataAnnotations.xml",
+        "microsoft.extensions.options.dataannotations.3.1.21.nupkg.sha512",
+        "microsoft.extensions.options.dataannotations.nuspec"
+      ]
+    },
     "Microsoft.Extensions.Primitives/8.0.0": {
       "sha512": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g==",
       "type": "package",
@@ -5590,6 +5852,42 @@
         "lib/netstandard2.0/Mono.TextTemplating.dll",
         "mono.texttemplating.2.2.1.nupkg.sha512",
         "mono.texttemplating.nuspec"
+      ]
+    },
+    "NCrontab/3.3.3": {
+      "sha512": "2yzZXZLI0YpxrNgWnW/4xoo7ErLgWJIwTljRVEJ3hyjc7Kw9eGdjbFZGP1AhBuTUEZQ443PgZifG1yox6Qo1/A==",
+      "type": "package",
+      "path": "ncrontab/3.3.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "COPYING.txt",
+        "lib/net35/NCrontab.dll",
+        "lib/net35/NCrontab.pdb",
+        "lib/netstandard1.0/NCrontab.dll",
+        "lib/netstandard1.0/NCrontab.pdb",
+        "lib/netstandard2.0/NCrontab.dll",
+        "lib/netstandard2.0/NCrontab.pdb",
+        "ncrontab.3.3.3.nupkg.sha512",
+        "ncrontab.nuspec"
+      ]
+    },
+    "NCrontab.Signed/3.3.3": {
+      "sha512": "YzLZyFiovVnAvvsTDnQygC82KhQyJIMsBspTYvHaK4Fp73UgUCni05mIQgOMZIZDlnO8Mg9fcNi5fpDArgQO4A==",
+      "type": "package",
+      "path": "ncrontab.signed/3.3.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "COPYING.txt",
+        "lib/net35/NCrontab.Signed.dll",
+        "lib/net35/NCrontab.Signed.pdb",
+        "lib/netstandard1.0/NCrontab.Signed.dll",
+        "lib/netstandard1.0/NCrontab.Signed.pdb",
+        "lib/netstandard2.0/NCrontab.Signed.dll",
+        "lib/netstandard2.0/NCrontab.Signed.pdb",
+        "ncrontab.signed.3.3.3.nupkg.sha512",
+        "ncrontab.signed.nuspec"
       ]
     },
     "Newtonsoft.Json/13.0.1": {
@@ -7693,7 +7991,10 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "CSharpFunctionalExtensions >= 2.42.5",
+      "CronScheduler.AspNetCore >= 3.1.0",
+      "CronScheduler.Extensions >= 3.1.0",
       "ExpenseTracker.Service >= 1.0.0",
+      "Iminetsoft.CronNET >= 8.0.2",
       "Microsoft.AspNetCore.Authentication >= 2.2.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.6",
       "Microsoft.AspNetCore.Authorization >= 8.0.6",
@@ -7708,6 +8009,8 @@
       "Microsoft.Extensions.Hosting >= 8.0.0",
       "Microsoft.IdentityModel.Tokens >= 7.6.2",
       "Microsoft.OpenApi >= 1.6.15",
+      "NCrontab >= 3.3.3",
+      "NCrontab.Signed >= 3.3.3",
       "Swashbuckle.AspNetCore >= 6.4.0",
       "System.IdentityModel.Tokens.Jwt >= 7.6.2",
       "System.Security.Claims >= 4.3.0",
@@ -7764,6 +8067,18 @@
           "CSharpFunctionalExtensions": {
             "target": "Package",
             "version": "[2.42.5, )"
+          },
+          "CronScheduler.AspNetCore": {
+            "target": "Package",
+            "version": "[3.1.0, )"
+          },
+          "CronScheduler.Extensions": {
+            "target": "Package",
+            "version": "[3.1.0, )"
+          },
+          "Iminetsoft.CronNET": {
+            "target": "Package",
+            "version": "[8.0.2, )"
           },
           "Microsoft.AspNetCore.Authentication": {
             "target": "Package",
@@ -7824,6 +8139,14 @@
           "Microsoft.OpenApi": {
             "target": "Package",
             "version": "[1.6.15, )"
+          },
+          "NCrontab": {
+            "target": "Package",
+            "version": "[3.3.3, )"
+          },
+          "NCrontab.Signed": {
+            "target": "Package",
+            "version": "[3.3.3, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
