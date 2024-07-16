@@ -7,10 +7,6 @@ namespace ExpenseTracker.Service.Interfaces
 
     public interface IScheduledService
     {
-        public Scheduled FromDtoToScheduled(ScheduledDto scheduledDto);
-
-        public ScheduledDto FromScheduledToDto(Scheduled scheduled);
-
         public Task<List<ScheduledDto>> GetAllScheduledTransactionsAsync();
 
         public Task<Result> CreateScheduledIncomeAsync(ScheduledDto scheduledDto);
@@ -21,6 +17,13 @@ namespace ExpenseTracker.Service.Interfaces
         public Task<Result> UpdateScheduledAsync(Scheduled scheduled);
 
         public Task<Scheduled> GetScheduledByIDAsync(int id);
+
+        public Task<List<Scheduled>> GetAllScheduledBeforeDateAsync(DateTime date);
+
+        public Task<List<Scheduled>> GetAllScheduledOfAccount(int accountId);
+
+        public Task<double> GetSumOfIncomesForAMonth(int accountId);
+        public Task<double> GetSumOfExpensesForAMonth(int accountId);
 
 
     }

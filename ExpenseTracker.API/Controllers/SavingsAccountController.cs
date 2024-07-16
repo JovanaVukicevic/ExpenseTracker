@@ -35,16 +35,26 @@ public class SavingsAccountController : ControllerBase
         return result;
     }
 
+    [HttpPost("Plan")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<SavingsAccountDto> CreateSavingsPlan(SavingsAccountDto savingsAccountDto)
+    {
+        double amountPerMonth = savingsAccountDto.TargetAmount / (savingsAccountDto.TargetDate.Month - DateTime.Now.Month + 1);
+        savingsAccountDto.AmountPerMonth = amountPerMonth;
+        return savingsAccountDto;
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
-    public async Task<ActionResult> CreateSAccount(SavingsAccountDto acc, string accName)
+    public async Task<ActionResult> CreateSAccount(SavingsAccountDto savingsAccount, string accountName)
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
         //var user = _userRepository.GetUserByUsername(username);
-        var result = await _savingsService.CreateSavingsAccount(acc, username, accName);
+        var result = await _savingsService.CreateSavingsAccount(savingsAccount, username, accountName);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -68,12 +78,4 @@ public class SavingsAccountController : ControllerBase
         return Ok(result.Value);
 
     }
-
-
-
-
-
-
-
-
 }

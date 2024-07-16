@@ -55,11 +55,21 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<List<Transaction>> GetAllTransactionsOfAnAccount(int accountId)
     {
-        return await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
+        return await _context.Transactions.Where(t => t.AccountID == accountId && t.Date.Month == DateTime.Now.Month).ToListAsync();
     }
 
     public async Task<double> GetAllExpenseOfACategory(int month, string name)
     {
         return await _context.Transactions.Where(t => t.Indicator == '-' && t.Date.Month == month && t.CategoryName == name).SumAsync(t => t.Amount);
+    }
+
+    public async Task<double> GetSumOfExpensesForAMonth(int accountId)
+    {
+        return await _context.Transactions.Where(t => t.Indicator == '-' && t.Date.Month == DateTime.Now.Month).SumAsync(t => t.Amount);
+    }
+
+    public async Task<double> GetSumOfIncomesForAMonth(int accoundId)
+    {
+        return await _context.Transactions.Where(t => t.Indicator == '+' && t.Date.Month == DateTime.Now.Month).SumAsync(t => t.Amount);
     }
 }

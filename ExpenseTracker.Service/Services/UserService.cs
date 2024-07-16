@@ -9,6 +9,7 @@ using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using ExpenseTracker.Service.Extensions;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -23,36 +24,6 @@ public class UserService : IUserService
         _userRepository = userRepository;
         _authService = authService;
     }
-    public User FromDtoToUser(UserDto userDto)
-    {
-        var user = new User()
-        {
-            FirstName = userDto.FirstName,
-            LastName = userDto.LastName,
-            Email = userDto.Email,
-            UserName = userDto.Username,
-            PasswordHash = userDto.Password,
-            IsPremuium = userDto.IsPremuium,
-            SavingsAccountID = 0,
-        };
-        return user;
-    }
-
-    public UserDto FromUserToDto(User user)
-    {
-        var userDto = new UserDto()
-        {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            Username = user.UserName,
-            Password = user.PasswordHash,
-            IsPremuium = user.IsPremuium
-        };
-
-        return userDto;
-    }
-
     public async Task<List<UserDto>> GetUsersAsync()
     {
         List<User> users = await _userRepository.GetAllUsers();
@@ -63,7 +34,7 @@ public class UserService : IUserService
         List<UserDto> usersDto = [];
         foreach (User user in users)
         {
-            usersDto.Add(FromUserToDto(user));
+            usersDto.Add(user.ToDto());
         }
         return usersDto;
 
@@ -76,7 +47,7 @@ public class UserService : IUserService
         {
             return null;
         }
-        return FromUserToDto(user);
+        return user.ToDto();
     }
 
     public async Task<Result> RegisterUserAsync(UserDto userDto)
@@ -90,7 +61,7 @@ public class UserService : IUserService
         {
             return Result.Failure<string>("Username is already taken");
         }
-        User user = FromDtoToUser(userDto);
+        User user = userDto.ToUser();
         var result = await _authService.RegisterUser(userDto);
         if (!result.IsSuccess)
         {
@@ -113,5 +84,15 @@ public class UserService : IUserService
         }
         return Result.Success<string>("User is deleted!");
 
+    }
+
+    public async Task<List<User>> GetAllPremiumUsersAsync()
+    {
+        return await _userRepository.GetAllPremiumUsers();
+    }
+
+    public async Task<User> GetUserByUsernameAsync(string username)
+    {
+        return await _userRepository.GetUserByUsername(username);
     }
 }

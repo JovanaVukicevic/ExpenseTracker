@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using CronNET;
 using CronScheduler.Extensions;
+using ExpenseTracker.Service.EmailConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,11 @@ builder.Services.AddScoped<IScheduledService, ScheduledService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<UserManager<User>>();
 builder.Services.AddHostedService<SchedulingTransactionService>();
+builder.Services.AddTransient<ReportingService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<EmailService>();
+builder.Services.AddHostedService<MonthlySummaryService>();
+
 // builder.Services.AddScoped<SignInManager<User>>();
 
 //builder.Services.AddCronJob<CronJob>("* * * * *");

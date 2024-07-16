@@ -7,10 +7,6 @@ namespace ExpenseTracker.Service.Interfaces
 
     public interface IUserService
     {
-        public User FromDtoToUser(UserDto userDto);
-
-        public UserDto FromUserToDto(User user);
-
         public Task<List<UserDto>> GetUsersAsync();
 
         public Task<UserDto> GetUserByIDAsync(string userId);
@@ -18,5 +14,8 @@ namespace ExpenseTracker.Service.Interfaces
         public Task<Result> RegisterUserAsync(UserDto user);
 
         public Task<Result> DeleteUserAsync(string username);
+        public Task<List<User>> GetAllPremiumUsersAsync();
+
+        public Task<User> GetUserByUsernameAsync(string username);
     }
 }

@@ -10,8 +10,10 @@ namespace ExpenseTracker.Service.Interfaces
         public Task<Result<AccountDto, IEnumerable<string>>> CreateAccount(AccountDto a, string username);
         public Task<Result<AccountDto, IEnumerable<string>>> RemoveAccount(string name, string username);
 
-        public Account FromDtoToAccount(AccountDto accountDto);
+        public Task<Account> GetAccountByID(int accountId);
 
-        public AccountDto FromAccountToDto(Account account);
+        public Task<bool> UpdateAccountAsync(AccountDto accountDto);
+
+        public Task<List<Account>> GetAllAccountsOfAUser(string id);
     }
 }

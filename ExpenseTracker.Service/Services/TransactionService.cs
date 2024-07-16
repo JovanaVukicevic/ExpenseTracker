@@ -4,6 +4,7 @@ using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
 using CSharpFunctionalExtensions;
 using System.Diagnostics;
+using ExpenseTracker.Service.Extensions;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -15,38 +16,14 @@ public class TransactionService : ITransactionService
 
     private readonly ICategoryRepository _categoryRepository;
 
-    public TransactionService(ITransactionRepository transactionRepository, IAccountRepository accountRepository, ICategoryRepository categoryRepository)
+    private readonly EmailService _emailService;
+
+    public TransactionService(ITransactionRepository transactionRepository, EmailService emailService, IAccountRepository accountRepository, ICategoryRepository categoryRepository)
     {
         _transactionRepository = transactionRepository;
         _accountRepository = accountRepository;
         _categoryRepository = categoryRepository;
-    }
-
-
-    public TransactionDto FromTransactionToDto(Transaction transaction)
-    {
-        var transDto = new TransactionDto
-        {
-            AccountID = transaction.AccountID,
-            Date = transaction.Date,
-            Name = transaction.Name,
-            Amount = transaction.Amount,
-            //Indicator = transaction.Indicator,
-            CategoryName = transaction.CategoryName
-        };
-        return transDto;
-    }
-    public Transaction FromDtoToTransaction(TransactionDto transactionDto)
-    {
-        var transaction = new Transaction
-        {
-            AccountID = transactionDto.AccountID,
-            Date = transactionDto.Date,
-            Name = transactionDto.Name,
-            Amount = transactionDto.Amount,
-            CategoryName = transactionDto.CategoryName
-        };
-        return transaction;
+        _emailService = emailService;
     }
     public async Task<List<TransactionDto>> GetAllTransactionsAsync()
     {
@@ -55,22 +32,22 @@ public class TransactionService : ITransactionService
         {
             return null;
         }
-        List<TransactionDto> transDto = [];
-        foreach (Transaction trans in transactions)
+        List<TransactionDto> transactionsDto = [];
+        foreach (Transaction transaction in transactions)
         {
-            transDto.Add(FromTransactionToDto(trans));
+            transactionsDto.Add(transaction.ToDto());
         }
-        return transDto;
+        return transactionsDto;
     }
 
-    public async Task<List<Transaction>> GetAllTransactionsOfAUser(string username)
+    public async Task<List<Transaction>> GetAllTransactionsOfAccount(int accountId)
     {
-        throw new NotImplementedException();
+        return await _transactionRepository.GetAllTransactionsOfAnAccount(accountId);
     }
 
     public async Task<Result> CreateIncomeAsync(TransactionDto transactionDto)
     {
-        Transaction transaction = FromDtoToTransaction(transactionDto);
+        Transaction transaction = transactionDto.ToTransaction();
         transaction.Indicator = '+';
         transaction.Date = DateTime.Now;
         var result = await _transactionRepository.CreateTransaction(transaction);
@@ -88,16 +65,18 @@ public class TransactionService : ITransactionService
 
     public async Task<Result> CreateExpenseAsync(TransactionDto transactionDto)
     {
-        Transaction transaction = FromDtoToTransaction(transactionDto);
+        Transaction transaction = transactionDto.ToTransaction();
         transaction.Indicator = '-';
         transaction.Date = DateTime.Now;
         double sumExpense = await _transactionRepository.GetAllExpenseOfACategory(transaction.Date.Month, transaction.CategoryName);
         Category category = await _categoryRepository.GetCategoryByName(transaction.CategoryName);
+        Account account = await _accountRepository.GetAccountByID(transactionDto.AccountID);
         if (sumExpense + transaction.Amount > category.BudgetCap && category.BudgetCap != 0)
         {
+            await _emailService.SendEmailBudgetCapAsync("jovana.vuk2000@gmail.com", "Passing category budget cap", "Transaction was unsuccesful because it exceedes budget cap of the category");
             return Result.Failure<string>("You are passing a budget cap of a category");
         }
-        Account account = await _accountRepository.GetAccountByID(transactionDto.AccountID);
+
         if (account.Balance < transaction.Amount)
         {
             return Result.Failure<string>("There's not enough funds on your account");
@@ -123,5 +102,24 @@ public class TransactionService : ITransactionService
         }
         return Result.Success<string>("Transaction is succesfully deleted");
 
+    }
+
+    public async Task<double> GetSumOfIncomesForAMonth(int accountId)
+    {
+        return await _transactionRepository.GetSumOfIncomesForAMonth(accountId);
+    }
+
+    public async Task<double> GetSumOfExpensesForAMonth(int accountId)
+    {
+        return await _transactionRepository.GetSumOfExpensesForAMonth(accountId);
+    }
+
+    public async Task<bool> IsASavingsTransaction(TransactionDto transactionDto)
+    {
+        if (transactionDto.CategoryName == "Savings")
+        {
+            return true;
+        }
+        return false;
     }
 }

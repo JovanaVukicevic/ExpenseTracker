@@ -12,9 +12,13 @@ namespace ExpenseTracker.Repository.Interfaces
         Task<bool> UpdateTransaction(Transaction t);
         Task<bool> DeleteTransaction(Transaction t);
 
-        Task<List<Transaction>> GetAllTransactionsOfAnAccount(int userId);
+        Task<List<Transaction>> GetAllTransactionsOfAnAccount(int accountId);
 
         Task<double> GetAllExpenseOfACategory(int month, string name);
+
+        Task<double> GetSumOfExpensesForAMonth(int accountId);
+
+        Task<double> GetSumOfIncomesForAMonth(int accountId);
 
 
 

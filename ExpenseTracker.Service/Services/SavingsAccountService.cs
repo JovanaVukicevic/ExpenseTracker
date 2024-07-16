@@ -5,6 +5,7 @@ using ExpenseTracker.Repository.Repository;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
+using ExpenseTracker.Service.Extensions;
 
 
 
@@ -20,15 +21,18 @@ public class SavingsAccountService : ISavingsAccountService
 
     private readonly ISavingsAccountRepository _savingsAccountRepository;
 
-    public SavingsAccountService(DataContext context, IUserRepository userRepository, IAccountRepository accountRepository, ISavingsAccountRepository savingsAccountRepository)
+    private readonly IScheduledService _scheduledService;
+
+    public SavingsAccountService(DataContext context, IScheduledService scheduledService, IUserRepository userRepository, IAccountRepository accountRepository, ISavingsAccountRepository savingsAccountRepository)
     {
         _context = context;
         _userRepository = userRepository;
         _accountRepository = accountRepository;
         _savingsAccountRepository = savingsAccountRepository;
+        _scheduledService = scheduledService;
     }
 
-    public async Task<Result<SavingsAccountDto, IEnumerable<string>>> CreateSavingsAccount(SavingsAccountDto a, string username, string accountName)
+    public async Task<Result<SavingsAccountDto, IEnumerable<string>>> CreateSavingsAccount(SavingsAccountDto savingsAccountDto, string username, string accountName)
     {
         var user = await _userRepository.GetUserByUsername(username);
         if (user == null || username == null)
@@ -39,17 +43,25 @@ public class SavingsAccountService : ISavingsAccountService
         {
             return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "User cannot have a savings account because he is not premium." });
         }
-        var sa = FromDtoToSavingsAccount(a);
-        sa.UserID = user.Id;
-        var acc = await _accountRepository.GetAccountByUserIdAndName(user.Id, accountName);
-        sa.AccountID = acc.ID;
-        if (_savingsAccountRepository.CreateSAccount(sa).IsFaulted)
+
+        var savingsAccount = savingsAccountDto.ToSavingsAccount();
+        savingsAccount.UserID = user.Id;
+        var account = await _accountRepository.GetAccountByUserIdAndName(user.Id, accountName);
+        savingsAccount.AccountID = account.ID;
+
+        double amountPerMonth = savingsAccountDto.TargetAmount / (savingsAccountDto.TargetDate.Month - DateTime.Now.Month + 1);
+        savingsAccount.AmountPerMonth = amountPerMonth;
+        if (!await _savingsAccountRepository.CreateSAccount(savingsAccount))
         {
             return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during saving the savings account." });
         }
-        SavingsAccount newAcc = await _savingsAccountRepository.GetSAccountsOfAUser(user.Id);
-        acc.SavingsAccountID = newAcc.ID;
-        return Result.Success<SavingsAccountDto, IEnumerable<string>>(a);
+        savingsAccountDto.AmountPerMonth = amountPerMonth;
+        if (!await CreateSavingsTransactions(user.Id, account, savingsAccountDto))
+        {
+            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during saving the savings account." });
+        }
+        await _accountRepository.UpdateAccount(account);
+        return Result.Success<SavingsAccountDto, IEnumerable<string>>(savingsAccountDto);
 
     }
 
@@ -61,14 +73,14 @@ public class SavingsAccountService : ISavingsAccountService
         {
             return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
         }
-        SavingsAccount sa = await _savingsAccountRepository.GetSAccountsOfAUser(user.Id);
-        var result = await _savingsAccountRepository.DeleteSavingsAccount(sa);
+        SavingsAccount savingsAccount = await _savingsAccountRepository.GetSAccountsOfAUser(user.Id);
+        var result = await _savingsAccountRepository.DeleteSavingsAccount(savingsAccount);
         if (!result)
         {
             return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during deleting the savings account." });
         }
 
-        return Result.Success<SavingsAccountDto, IEnumerable<string>>(FromSAToDto(sa));
+        return Result.Success<SavingsAccountDto, IEnumerable<string>>(savingsAccount.ToDto());
 
     }
 
@@ -77,26 +89,36 @@ public class SavingsAccountService : ISavingsAccountService
         return await _savingsAccountRepository.GetAllSavingsAccounts();
     }
 
-    public SavingsAccount FromDtoToSavingsAccount(SavingsAccountDto savingsAccountDto)
+    public async Task<bool> UpdateSavingsAccount(SavingsAccount savingsAccount)
     {
-        var savingsAccount = new SavingsAccount
-        {
-            Name = savingsAccountDto.Name,
-            TargetDate = savingsAccountDto.TargetDate,
-            TargetAmount = savingsAccountDto.TargetAmount,
-            AmountPerMonth = savingsAccountDto.AmountPerMonth
-        };
-        return savingsAccount;
+        return await _savingsAccountRepository.UpdateSavingsAccount(savingsAccount);
     }
 
-    public SavingsAccountDto FromSAToDto(SavingsAccount savingsAccount)
+    public async Task<SavingsAccount> GetSavingsAccountByID(int id)
     {
-        var savingsAccountDto = new SavingsAccountDto
+        return await _savingsAccountRepository.GetSAccountByID(id);
+    }
+
+    public async Task<bool> CreateSavingsTransactions(string userId, Account account, SavingsAccountDto savingsAccountDto)
+    {
+        SavingsAccount newAccount = await _savingsAccountRepository.GetSAccountsOfAUser(userId);
+        account.SavingsAccountID = newAccount.ID;
+        var scheduledSavingsTransaction = new Scheduled
         {
-            Name = savingsAccount.Name,
-            TargetAmount = savingsAccount.TargetAmount,
-            AmountPerMonth = savingsAccount.AmountPerMonth
+            AccountID = account.ID,
+            Name = "Transfer to savings account",
+            CategoryName = "Savings",
+            Amount = savingsAccountDto.AmountPerMonth,
+            Indicator = '-',
+            StartDate = DateTime.Now,
+            EndDate = savingsAccountDto.TargetDate,
+            TimeIntervalInDays = 0
         };
-        return savingsAccountDto;
+        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto());
+        if (result.IsFailure)
+        {
+            return false;
+        }
+        return true;
     }
 }

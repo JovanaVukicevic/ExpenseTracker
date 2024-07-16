@@ -33,8 +33,6 @@ public class ScheduledRepository : IScheduledRepository
 
     public async Task<double> GetAllScheduledIncomeForAMonth(int month)
     {
-        //     return await _context.Schedules.Where(s => s.StartDate.Month == month && s.Indicator == '+').Sum(s.Amount);
-        // 
         return await _context.Schedules.Where(s => s.Indicator == '+' && s.StartDate.Month == month).SumAsync(s => s.Amount);
     }
 
@@ -43,9 +41,14 @@ public class ScheduledRepository : IScheduledRepository
         return await _context.Schedules.ToListAsync();
     }
 
-    public Task<List<Scheduled>> GetAllScheduledTransactionsOfAUser(int userId)
+    public async Task<List<Scheduled>> GetAllScheduledTransactionsBeforeDate(DateTime date)
     {
-        throw new NotImplementedException();
+        return await _context.Schedules.Where(s => s.StartDate <= date).ToListAsync();
+    }
+
+    public async Task<List<Scheduled>> GetAllScheduledTransactionsOfAccount(int accountId)
+    {
+        return await _context.Schedules.Where(s => s.AccountID == accountId && s.StartDate.Month == DateTime.Now.Month).ToListAsync();
     }
 
     public async Task<Scheduled> GetScheduledByID(int id)
@@ -56,6 +59,16 @@ public class ScheduledRepository : IScheduledRepository
     public async Task<double> GetScheduledExpensesOfACategory(int month, string categoryName)
     {
         return await _context.Schedules.Where(s => s.Indicator == '-' && s.StartDate.Month == month && s.CategoryName == categoryName).SumAsync(s => s.Amount);
+    }
+
+    public async Task<double> GetSumOfExpensesForAMonth(int accountId)
+    {
+        return await _context.Schedules.Where(s => s.Indicator == '-' && s.AccountID == accountId && s.StartDate.Month == DateTime.Now.Month).SumAsync(s => s.Amount);
+    }
+
+    public async Task<double> GetSumOfIncomesForAMonth(int accountId)
+    {
+        return await _context.Schedules.Where(s => s.Indicator == '+' && s.AccountID == accountId && s.StartDate.Month == DateTime.Now.Month).SumAsync(s => s.Amount);
     }
 
     public bool ScheduledExistsId(int id)

@@ -11,12 +11,13 @@ namespace ExpenseTracker.Service.Interfaces
         Task<Result<SavingsAccountDto, IEnumerable<string>>> CreateSavingsAccount(SavingsAccountDto a, string username, string AccountName);
 
         public Task<Result<SavingsAccountDto, IEnumerable<string>>> RemoveSAccount(string username);
-
-        public SavingsAccount FromDtoToSavingsAccount(SavingsAccountDto savingsAccountDto);
-
-        public SavingsAccountDto FromSAToDto(SavingsAccount savingsAccount);
-
         public Task<List<SavingsAccount>> GetAllSAAsync();
+
+        public Task<bool> UpdateSavingsAccount(SavingsAccount savingsAccount);
+
+        public Task<SavingsAccount> GetSavingsAccountByID(int id);
+
+        public Task<bool> CreateSavingsTransactions(string userId, Account account, SavingsAccountDto savingsAccountDto);
 
 
     }

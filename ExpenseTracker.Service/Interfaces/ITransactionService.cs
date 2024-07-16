@@ -7,19 +7,21 @@ namespace ExpenseTracker.Service.Interfaces
 
     public interface ITransactionService
     {
-        public Transaction FromDtoToTransaction(TransactionDto transDto);
-
-        public TransactionDto FromTransactionToDto(Transaction transaction);
-
         public Task<List<TransactionDto>> GetAllTransactionsAsync();
 
-        public Task<List<Transaction>> GetAllTransactionsOfAUser(string username);
+        public Task<List<Transaction>> GetAllTransactionsOfAccount(int accountId);
 
         public Task<Result> CreateIncomeAsync(TransactionDto transactionDto);
 
         public Task<Result> CreateExpenseAsync(TransactionDto transactionDto);
 
         public Task<Result> DeleteTransaction(int id);
+
+        public Task<double> GetSumOfIncomesForAMonth(int accountId);
+
+        public Task<bool> IsASavingsTransaction(TransactionDto transactionDto);
+
+        public Task<double> GetSumOfExpensesForAMonth(int accountId);
 
     }
 }

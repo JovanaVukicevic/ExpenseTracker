@@ -7,7 +7,7 @@ namespace ExpenseTracker.Repository.Interfaces
     {
         Task<List<Account>> GetAllAccounts();
         Task<Account> GetAccountByID(int id);
-        Task<List<Account>> GetAllAccountsOfAUser(string username);
+        Task<List<Account>> GetAllAccountsOfAUser(string id);
         Task<User> GetOwnerOfTheAccount(int accountId);
         Task<List<Transaction>> GetTransactionsOfATypeOfAccount(int accountId, char c);
         Task<List<Transaction>> GetTransactionsOfACategoryOfAccount(int accountId, string name);

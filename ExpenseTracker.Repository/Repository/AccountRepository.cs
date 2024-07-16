@@ -72,7 +72,13 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Account> GetAccountByID(int id)
     {
-        return await _context.Accounts.Where(a => a.ID == id).FirstOrDefaultAsync();
+        var result = await _context.Accounts.Where(a => a.ID == id).FirstOrDefaultAsync();
+        if (result == null)
+        {
+            return null;
+        }
+        return result;
+
     }
 
     public async Task<List<Account>> GetAllAccounts()

@@ -6,6 +6,7 @@ using static ExpenseTracker.Service.Dto.AccountDto;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
+using ExpenseTracker.Service.Extensions;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -24,60 +25,58 @@ public class AccountService : IAccountService
         _accountRepository = accountRepository;
     }
 
-    public async Task<Result<AccountDto, IEnumerable<string>>> CreateAccount(AccountDto a, string username)
+    public async Task<Result<AccountDto, IEnumerable<string>>> CreateAccount(AccountDto accountDto, string username)
     {
         var user = await _userRepository.GetUserByUsername(username);
         if (user == null || username == null)
         {
             return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
         }
-        var acc = FromDtoToAccount(a);
-        acc.UserId = user.Id;
-        var result = await _accountRepository.AddAccount(acc);
+        var account = accountDto.ToAccount();
+        account.UserId = user.Id;
+        var result = await _accountRepository.AddAccount(account);
         if (!result)
         {
             return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during saving the account." });
         }
 
-        return Result.Success<AccountDto, IEnumerable<string>>(a);
+        return Result.Success<AccountDto, IEnumerable<string>>(accountDto);
     }
 
-    public AccountDto FromAccountToDto(Account account)
+    public async Task<Account> GetAccountByID(int accountId)
     {
-        var accountDto = new AccountDto
+        var result = await _accountRepository.GetAccountByID(accountId);
+        if (result != null)
         {
-            Name = account.Name,
-        };
-        return accountDto;
-    }
-
-    public Account FromDtoToAccount(AccountDto accountDto)
-    {
-        var account = new Account
-        {
-            Name = accountDto.Name,
-            Date = DateTime.Today,
-            Balance = 0,
-            SavingsAccountID = 0,
-        };
-        return account;
+            return result;
+        }
+        return null;
     }
 
     public async Task<Result<AccountDto, IEnumerable<string>>> RemoveAccount(string name, string username)
     {
         var user = await _userRepository.GetUserByUsername(username);
-
         if (user == null || username == null)
         {
             return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
         }
-        Account acc = _context.Accounts.Where(a => a.Name == name && a.UserId == user.Id).FirstOrDefault();
-        if (_accountRepository.DeleteAccount(acc).IsFaulted)
+        Account account = _context.Accounts.Where(a => a.Name == name && a.UserId == user.Id).FirstOrDefault();
+        if (_accountRepository.DeleteAccount(account).IsFaulted)
         {
             return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during deleting the account." });
         }
 
-        return Result.Success<AccountDto, IEnumerable<string>>(FromAccountToDto(acc));
+        return Result.Success<AccountDto, IEnumerable<string>>(account.ToDto());
 
+    }
+
+    public async Task<bool> UpdateAccountAsync(AccountDto accountDto)
+    {
+        return await _accountRepository.UpdateAccount(accountDto.ToAccount());
+    }
+
+    public async Task<List<Account>> GetAllAccountsOfAUser(string id)
+    {
+        return await _accountRepository.GetAllAccountsOfAUser(id);
     }
 }

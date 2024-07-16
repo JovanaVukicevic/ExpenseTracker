@@ -64,4 +64,9 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users.AnyAsync(u => u.UserName == username);
     }
+
+    public async Task<List<User>> GetAllPremiumUsers()
+    {
+        return await _context.Users.Where(u => u.IsPremuium == true).ToListAsync();
+    }
 }

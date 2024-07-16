@@ -3,6 +3,8 @@ using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpenseTracker.Repository.Repository;
 public class SavingsAccountRepository : ISavingsAccountRepository
@@ -14,37 +16,27 @@ public class SavingsAccountRepository : ISavingsAccountRepository
 
     private readonly IAccountRepository _accountRepository;
 
-    public SavingsAccountRepository(DataContext context, IUserRepository userRepository, IAccountRepository accountRepository)
+    private readonly ILogger<SavingsAccountRepository> _logger;
+
+    public SavingsAccountRepository(DataContext context, IUserRepository userRepository, IAccountRepository accountRepository, ILogger<SavingsAccountRepository> logger)
     {
         _context = context;
         _userRepository = userRepository;
         _accountRepository = accountRepository;
+        _logger = logger;
     }
-
-    // public async Task<Result<SavingsAccountDto, IEnumerable<string>>> CreateSavingsAccount(SavingsAccountDto a, string username, string AccountName)
-    // {
-    //     var user = await _userRepository.GetUserByUsername(username);
-    //     if (user == null || username == null)
-    //     {
-    //         return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
-    //     }
-    //     var sa = FromDtoToSA(a);
-    //     sa.UserID = user.Id;
-    //     var acc = await _accountRepository.GetAccountByUserIdAndName(user.Id, AccountName);
-    //     sa.AccountID = acc.ID;
-    //     if (CreateSAccount(sa).IsFaulted)
-    //     {
-    //         return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during saving the savings account." });
-    //     }
-
-    //     return Result.Success<SavingsAccountDto, IEnumerable<string>>(a);
-
-    // }
-
     public async Task<bool> CreateSAccount(SavingsAccount sa)
     {
-        await _context.SavingsAccounts.AddAsync(sa);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SavingsAccounts.AddAsync(sa);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            return false;
+        }
         return true;
     }
 
@@ -62,7 +54,7 @@ public class SavingsAccountRepository : ISavingsAccountRepository
 
     public async Task<SavingsAccount> GetSAccountByID(int id)
     {
-        throw new NotImplementedException();
+        return await _context.SavingsAccounts.Where(s => s.ID == id).FirstOrDefaultAsync();
     }
 
     public async Task<SavingsAccount> GetSAccountsOfAUser(string userId)
@@ -81,7 +73,9 @@ public class SavingsAccountRepository : ISavingsAccountRepository
     }
     public async Task<bool> UpdateSavingsAccount(SavingsAccount sa)
     {
-        throw new NotImplementedException();
+        _context.SavingsAccounts.Update(sa);
+        await _context.SaveChangesAsync();
+        return true;
     }
 
 

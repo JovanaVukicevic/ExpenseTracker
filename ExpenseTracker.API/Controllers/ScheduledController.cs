@@ -49,7 +49,7 @@ public class ScheduledController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateScheduledExpense(ScheduledDto scheduledDto)
     {
-        var result = await _scheduledService.CreateScheduledIncomeAsync(scheduledDto);
+        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledDto);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
