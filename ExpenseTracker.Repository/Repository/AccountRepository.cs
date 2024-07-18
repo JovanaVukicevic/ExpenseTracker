@@ -3,6 +3,7 @@ using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ExpenseTracker.Repository.Repository;
 public class AccountRepository : IAccountRepository
@@ -11,33 +12,20 @@ public class AccountRepository : IAccountRepository
     private readonly DataContext _context;
 
     private readonly IUserRepository _userRepository;
+    private readonly ILogger<AccountRepository> _logger;
 
-    public AccountRepository(DataContext context, IUserRepository userRepository)
+    public AccountRepository(DataContext context, IUserRepository userRepository, ILogger<AccountRepository> logger)
     {
         _context = context;
         _userRepository = userRepository;
+        _logger = logger;
     }
     public async Task<bool> AccountExistsId(int id)
     {
-        return await _context.Accounts.AnyAsync(a => a.ID == id);
+
+        await _context.Accounts.AnyAsync(a => a.ID == id);
+        return true;
     }
-
-    // public async Task<Result<AccountDto, IEnumerable<string>>> CreateAccount(AccountDto a, string username)
-    // {
-    //     var user = await _userRepository.GetUserByUsername(username);
-    //     if (user == null || username == null)
-    //     {
-    //         return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
-    //     }
-    //     var acc = FromDtoToAccount(a);
-    //     acc.UserId = user.Id;
-    //     if (AddAccount(acc).IsFaulted)
-    //     {
-    //         return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during saving the account." });
-    //     }
-
-    //     return Result.Success<AccountDto, IEnumerable<string>>(a);
-    // }
 
     public async Task<bool> AddAccount(Account a)
     {
@@ -45,76 +33,55 @@ public class AccountRepository : IAccountRepository
         await _context.SaveChangesAsync();
         return true;
     }
-
-    // public async Task<Result<AccountDto, IEnumerable<string>>> RemoveAccount(string name, string username)
-    // {
-    //     var user = await _userRepository.GetUserByUsername(username);
-
-    //     if (user == null || username == null)
-    //     {
-    //         return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
-    //     }
-    //     Account acc = _context.Accounts.Where(a => a.Name == name && a.UserId == user.Id).FirstOrDefault();
-    //     if (DeleteAccount(acc).IsFaulted)
-    //     {
-    //         return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during deleting the account." });
-    //     }
-
-    //     return Result.Success<AccountDto, IEnumerable<string>>(FromAccount(acc));
-
-    // }
     public async Task<bool> DeleteAccount(Account a)
     {
+
         _context.Accounts.Remove(a);
         await _context.SaveChangesAsync();
         return true;
     }
-
-    public async Task<Account> GetAccountByID(int id)
+    public async Task<Account?> GetAccountByID(int id)
     {
-        var result = await _context.Accounts.Where(a => a.ID == id).FirstOrDefaultAsync();
-        if (result == null)
-        {
-            return null;
-        }
-        return result;
 
+        return await _context.Accounts
+        .Where(a => a.ID == id)
+        .FirstOrDefaultAsync();
     }
 
     public async Task<List<Account>> GetAllAccounts()
     {
+
         return await _context.Accounts.ToListAsync();
     }
 
     public async Task<List<Account>> GetAllAccountsOfAUser(string id)
     {
-        return await _context.Accounts.Where(a => a.UserId == id).ToListAsync();
-    }
 
-    public async Task<User> GetOwnerOfTheAccount(int accountId)
-    {
-        throw new NotImplementedException();
+        return await _context.Accounts
+        .Where(a => a.UserId == id)
+        .ToListAsync();
     }
-
-    public async Task<List<Transaction>> GetTransactionsOfACategoryOfAccount(int accountId, string name)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<List<Transaction>> GetTransactionsOfATypeOfAccount(int accountId, char c)
     {
-        return await _context.Transactions.Where(t => t.AccountID == accountId && t.Indicator == c).ToListAsync();
+        return await _context.Transactions
+        .Where(t => t.AccountID == accountId && t.Indicator == c)
+        .ToListAsync();
     }
+
     public async Task<bool> UpdateAccount(Account a)
     {
+
         _context.Accounts.Update(a);
         await _context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<Account> GetAccountByUserIdAndName(string userId, string name)
+    public async Task<Account?> GetAccountByUserIdAndName(string userId, string name)
     {
-        return await _context.Accounts.Where(a => a.UserId == userId && a.Name == name).FirstOrDefaultAsync();
+
+        return await _context.Accounts
+        .Where(a => a.UserId == userId && a.Name == name)
+        .FirstOrDefaultAsync();
     }
 }
 

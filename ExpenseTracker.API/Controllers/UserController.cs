@@ -1,12 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using ExpenseTracker.Service.Dto;
-using ExpenseTracker.Service.Services;
-using ExpenseTracker.Service.Interfaces;
-using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Constants;
-
+using ExpenseTracker.Service.Dto;
+using ExpenseTracker.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTracker.API.Controllers;
 
@@ -20,7 +16,6 @@ public class UserController : ControllerBase
 
     public UserController(IAuthenticationService authService, IUserService userService)
     {
-        // _userRepository = userRepository;
         _authService = authService;
         _userService = userService;
     }
@@ -36,28 +31,24 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<ActionResult> GetUserByUsername(string id)
+    [ServiceFilter(typeof(CustomExceptionFilter))]
+    public async Task<ActionResult<UserDto>> GetUserById([FromRoute] string id)
     {
-        if (!ModelState.IsValid)
+        var user = await _userService.GetUserByIDAsync(id);
+        if (user == null)
         {
-            return BadRequest();
+            return NotFound();
         }
 
-        var result = await _userService.GetUserByIDAsync(id);
-        if (result != null)
-        {
-            //var user = FromUserToDto(result);
-            return Ok(result);
-        }
-        return NotFound("There is no user with id: " + id);
+        return Ok(user);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<ActionResult<bool>> RegisterUser([FromBody] UserDto user)
+    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] UserDto userDto)
     {
-        var result = await _userService.RegisterUserAsync(user);
+        var result = await _userService.RegisterUserAsync(userDto);
         if (!result.IsSuccess)
         {
             return BadRequest(result.Error);

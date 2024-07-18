@@ -3,8 +3,8 @@ using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
 using CSharpFunctionalExtensions;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using ExpenseTracker.Service.Extensions;
+using ExpenseTracker.Service.CustomException;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -38,12 +38,12 @@ public class ScheduledService : IScheduledService
     {
         Scheduled scheduled = scheduledDto.ToScheduled();
         scheduled.Indicator = '-';
-        double sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.Month);
-        double sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.Month);
+        double? sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.Month);
+        double? sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.Month);
 
         if (scheduledDto.StartDate.Month == DateTime.Now.Month)
         {
-            Account account = await _accountRepository.GetAccountByID(scheduledDto.AccountID);
+            Account account = await _accountRepository.GetAccountByID(scheduledDto.AccountID) ?? throw new NotFoundException("Account not found");
             if (sumIncome + account.Balance < sumExpense + scheduledDto.Amount)
             {
                 return Result.Failure<string>("There is not enough funds for this transaction");
@@ -57,6 +57,7 @@ public class ScheduledService : IScheduledService
             }
 
         }
+
         if (scheduledDto.StartDate.Month != DateTime.Now.Month)
         {
             for (int i = scheduledDto.StartDate.Month; i < scheduledDto.EndDate.Month; i++)
@@ -67,14 +68,17 @@ public class ScheduledService : IScheduledService
                 }
             }
         }
+
         double sumCategory = await _scheduledRepository.GetScheduledExpensesOfACategory(scheduledDto.StartDate.Month, scheduledDto.CategoryName);
-        Category category = await _categoryRepository.GetCategoryByName(scheduledDto.CategoryName);
-        if (sumCategory + scheduledDto.Amount > category.BudgetCap && category.BudgetCap != 0)
+        Category category = await _categoryRepository.GetCategoryByName(scheduledDto.CategoryName) ?? throw new NotFoundException("Category not found");
+
+        if (IsOverBudget(scheduledDto.Amount, sumCategory, category.BudgetCap))
         {
             await _emailService.SendEmailBudgetCapAsync("jovana.vuk2000@gmail.com", "Passing category budget cap", "Scheduling the transaction was unsuccesful because it would exceedes budget cap of the category");
             return Result.Failure<string>("Your transaction is passing the budget cap of a category");
         }
         var result = await _scheduledRepository.CreateSchedule(scheduled);
+
         if (!result)
         {
             return Result.Failure<string>("Something went wrong while saving a scheduled expense!");
@@ -82,6 +86,12 @@ public class ScheduledService : IScheduledService
         return Result.Success<string>("Scheduled expense is saved");
 
     }
+
+    private static bool IsOverBudget(double newTransactionAmount, double sumCategory, double budgetCap)
+    {
+        return sumCategory + newTransactionAmount > budgetCap && budgetCap != 0;
+    }
+
     public async Task<Result> UpdateScheduledAsync(Scheduled scheduled)
     {
         var result = await _scheduledRepository.UpdateScheduled(scheduled);
@@ -94,27 +104,26 @@ public class ScheduledService : IScheduledService
 
     public async Task<List<ScheduledDto>> GetAllScheduledTransactionsAsync()
     {
-        List<Scheduled> scheduledTransactions = await _scheduledRepository.GetAllScheduledTransactions();
+        List<Scheduled> scheduledTransactions = await _scheduledRepository.GetAllScheduledTransactions() ?? throw new NotFoundException("Schedules not found");
 
         List<ScheduledDto> scheduledDtos = [];
         foreach (Scheduled scheduledTransaction in scheduledTransactions)
         {
             scheduledDtos.Add(scheduledTransaction.ToDto());
-            // scheduledDtos.Add(scheduledTransaction.ToDto());
         }
         return scheduledDtos;
     }
 
     public async Task<Scheduled> GetScheduledByIDAsync(int id)
     {
-        return await _scheduledRepository.GetScheduledByID(id);
+        return await _scheduledRepository.GetScheduledByID(id) ?? throw new NotFoundException("Scheduled transaction not found");
 
 
     }
     public async Task<Result> DeleteScheduledAsync(int id)
     {
-        Scheduled trans = await _scheduledRepository.GetScheduledByID(id);
-        var result = await _scheduledRepository.DeleteScheduled(trans);
+        var scheduledTransaction = await _scheduledRepository.GetScheduledByID(id) ?? throw new NotFoundException("Scheduled transaction not found");
+        var result = await _scheduledRepository.DeleteScheduled(scheduledTransaction);
         if (!result)
         {
             return Result.Failure<string>("Something went wrong while deleting a scheduled transaction!");

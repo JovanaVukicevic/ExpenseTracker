@@ -1,5 +1,3 @@
-using ExpenseTracker.Repository.Models;
-
 namespace ExpenseTracker.Service.Dto;
 
 public class AccountDto

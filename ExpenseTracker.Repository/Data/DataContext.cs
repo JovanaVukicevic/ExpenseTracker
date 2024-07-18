@@ -2,10 +2,8 @@ using ExpenseTracker.Repository.Constants;
 using ExpenseTracker.Repository.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System.Net;
+
 namespace ExpenseTracker.Repository.Data;
 
 
@@ -29,13 +27,15 @@ public class DataContext : IdentityDbContext<User>
      {
 
           builder.Entity<IdentityUserLogin<string>>(entity =>
-  {
-       entity.HasKey(l => new { l.LoginProvider, l.ProviderKey });
-  });
+          {
+               entity.HasKey(l => new { l.LoginProvider, l.ProviderKey });
+          });
+
           builder.Entity<IdentityUserRole<string>>(entity =>
           {
                entity.HasKey(r => new { r.UserId, r.RoleId });
           });
+
           builder.Entity<IdentityUserToken<string>>().HasKey(u => new { u.UserId, u.LoginProvider, u.Name });
           var user1 =
               new User
@@ -48,46 +48,49 @@ public class DataContext : IdentityDbContext<User>
                    IsPremuium = false
               };
           var user2 =
-          new User
-          {
-               Id = "userId2",
-               FirstName = "Jovan",
-               LastName = "Ivanovic",
-               Email = "jovan.ivanovic123gmail.com",
-               UserName = "jovan1234",
-               IsPremuium = false
+               new User
+               {
+                    Id = "userId2",
+                    FirstName = "Jovan",
+                    LastName = "Ivanovic",
+                    Email = "jovan.ivanovic123gmail.com",
+                    UserName = "jovan1234",
+                    IsPremuium = false
 
 
-          };
-          var user3 = new User
-          {
-               Id = "userId3",
-               FirstName = "Milica",
-               LastName = "Bulatovic",
-               Email = "milica.bulat@gmail.com",
-               UserName = "milica1234",
-               IsPremuium = false
-          };
+               };
+          var user3 =
+               new User
+               {
+                    Id = "userId3",
+                    FirstName = "Milica",
+                    LastName = "Bulatovic",
+                    Email = "milica.bulat@gmail.com",
+                    UserName = "milica1234",
+                    IsPremuium = false
+               };
 
-          var user4 = new User
-          {
-               Id = "userId4",
-               FirstName = "Ivana",
-               LastName = "Milosevic",
-               Email = "ivana.milos@gmail.com",
-               UserName = "ivana123456",
-               IsPremuium = false
-          };
+          var user4 =
+               new User
+               {
+                    Id = "userId4",
+                    FirstName = "Ivana",
+                    LastName = "Milosevic",
+                    Email = "ivana.milos@gmail.com",
+                    UserName = "ivana123456",
+                    IsPremuium = false
+               };
 
-          var user5 = new User
-          {
-               Id = "userId5",
-               FirstName = "Katarina",
-               LastName = "Bulatovic",
-               Email = "kaca.bulat@gmail.com",
-               UserName = "katarina1234",
-               IsPremuium = false
-          };
+          var user5 =
+               new User
+               {
+                    Id = "userId5",
+                    FirstName = "Katarina",
+                    LastName = "Bulatovic",
+                    Email = "kaca.bulat@gmail.com",
+                    UserName = "katarina1234",
+                    IsPremuium = false
+               };
 
           var passwordHasher = new PasswordHasher<User>();
           user1.PasswordHash = passwordHasher.HashPassword(user1, "passworD1!");
@@ -99,9 +102,9 @@ public class DataContext : IdentityDbContext<User>
 
 
           builder.Entity<IdentityRole>().HasData(
-              new IdentityRole<string> { Id = RoleIds.Admin, Name = ExpenseTracker.Repository.Constants.Roles.Admin },
-              new IdentityRole<string> { Id = RoleIds.Premium, Name = ExpenseTracker.Repository.Constants.Roles.Premium },
-              new IdentityRole<string> { Id = RoleIds.User, Name = ExpenseTracker.Repository.Constants.Roles.User });
+              new IdentityRole<string> { Id = RoleIds.Admin, Name = Constants.Roles.Admin },
+              new IdentityRole<string> { Id = RoleIds.Premium, Name = Constants.Roles.Premium },
+              new IdentityRole<string> { Id = RoleIds.User, Name = Constants.Roles.User });
 
 
           builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>

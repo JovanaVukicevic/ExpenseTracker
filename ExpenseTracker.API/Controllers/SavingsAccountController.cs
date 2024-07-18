@@ -1,11 +1,10 @@
 using System.Security.Claims;
+using ExpenseTracker.Repository.Constants;
+using ExpenseTracker.Repository.Models;
+using ExpenseTracker.Service.Dto;
+using ExpenseTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ExpenseTracker.Service.Interfaces;
-using ExpenseTracker.Service.Dto;
-using ExpenseTracker.Repository.Models;
-using ExpenseTracker.Repository.Constants;
-
 
 namespace ExpenseTracker.API.Controllers;
 
@@ -53,7 +52,7 @@ public class SavingsAccountController : ControllerBase
     public async Task<ActionResult> CreateSAccount(SavingsAccountDto savingsAccount, string accountName)
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
-        //var user = _userRepository.GetUserByUsername(username);
+
         var result = await _savingsService.CreateSavingsAccount(savingsAccount, username, accountName);
         if (result.IsFailure)
         {

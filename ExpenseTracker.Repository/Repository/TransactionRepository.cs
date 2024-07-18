@@ -32,20 +32,17 @@ public class TransactionRepository : ITransactionRepository
         return await _context.Transactions.ToListAsync();
     }
 
-    public async Task<Transaction> GetTransactionByID(int id)
+    public async Task<Transaction?> GetTransactionByID(int id)
     {
-        return await _context.Transactions.Where(t => t.ID == id).FirstOrDefaultAsync();
+        return await _context.Transactions
+        .Where(t => t.ID == id)
+        .FirstOrDefaultAsync();
     }
 
     public async Task<List<Transaction>> GetTransactionsOfAType(char c)
     {
         return await _context.Transactions.Where(t => t.Indicator == c).ToListAsync();
     }
-    public bool TransactionExistsId(int id)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> UpdateTransaction(Transaction t)
     {
         _context.Transactions.Update(t);
@@ -55,21 +52,29 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<List<Transaction>> GetAllTransactionsOfAnAccount(int accountId)
     {
-        return await _context.Transactions.Where(t => t.AccountID == accountId && t.Date.Month == DateTime.Now.Month).ToListAsync();
+        return await _context.Transactions
+        .Where(t => t.AccountID == accountId && t.Date.Month == DateTime.Now.Month)
+        .ToListAsync();
     }
 
     public async Task<double> GetAllExpenseOfACategory(int month, string name)
     {
-        return await _context.Transactions.Where(t => t.Indicator == '-' && t.Date.Month == month && t.CategoryName == name).SumAsync(t => t.Amount);
+        return await _context.Transactions
+        .Where(t => t.Indicator == '-' && t.Date.Month == month && t.CategoryName == name)
+        .SumAsync(t => t.Amount);
     }
 
     public async Task<double> GetSumOfExpensesForAMonth(int accountId)
     {
-        return await _context.Transactions.Where(t => t.Indicator == '-' && t.Date.Month == DateTime.Now.Month).SumAsync(t => t.Amount);
+        return await _context.Transactions
+        .Where(t => t.Indicator == '-' && t.Date.Month == DateTime.Now.Month)
+        .SumAsync(t => t.Amount);
     }
 
     public async Task<double> GetSumOfIncomesForAMonth(int accoundId)
     {
-        return await _context.Transactions.Where(t => t.Indicator == '+' && t.Date.Month == DateTime.Now.Month).SumAsync(t => t.Amount);
+        return await _context.Transactions
+        .Where(t => t.Indicator == '+' && t.Date.Month == DateTime.Now.Month)
+        .SumAsync(t => t.Amount);
     }
 }

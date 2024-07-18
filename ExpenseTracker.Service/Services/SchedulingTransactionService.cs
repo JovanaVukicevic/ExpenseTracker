@@ -1,14 +1,11 @@
-using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ExpenseTracker.Service.Services;
-using System.Transactions;
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.Dto;
-using ExpenseTracker.Repository.Data;
+using ExpenseTracker.Service.CustomException;
+
 
 namespace ExpenseTracker.Service.Services;
 
@@ -16,17 +13,11 @@ public class SchedulingTransactionService : IHostedService, IDisposable
 {
 
     private Timer _timer;
-
-    // private readonly IScheduledService _scheduledService;
-
     private readonly IServiceProvider _serviceProvider;
-    //private readonly ITransactionService _transactionService;
     private readonly ILogger<SchedulingTransactionService> _logger;
     public SchedulingTransactionService(ILogger<SchedulingTransactionService> logger, IServiceProvider serviceProvider)
     {
         _logger = logger;
-        //_scheduledService = scheduledService;
-        //_transactionService = transactionService;
         _serviceProvider = serviceProvider;
     }
     public void Dispose()
@@ -57,17 +48,16 @@ public class SchedulingTransactionService : IHostedService, IDisposable
             var _savingsAccountService = scope.ServiceProvider.GetRequiredService<ISavingsAccountService>();
             var _emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
             var _userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-            //var _context = scope.ServiceProvider.GetRequiredService<DataContext>();
 
-            var scheduledTransactions = await scheduledService.GetAllScheduledBeforeDateAsync(DateTime.Now);
+            var scheduledTransactions = await scheduledService.GetAllScheduledBeforeDateAsync(DateTime.Now) ?? throw new NotFoundException("Schedules not found");
             List<Repository.Models.Transaction> transactions = [];
             foreach (var scheduledTransaction in scheduledTransactions)
             {
                 var transaction = scheduledTransaction.ToTransaction();
                 var transactionDto = transaction.ToDto();
-                var account = await _accountService.GetAccountByID(transaction.AccountID);
-                var user = await _userService.GetUserByIDAsync(account.UserId);
-                var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID);
+                var account = await _accountService.GetAccountByID(transaction.AccountID) ?? throw new NotFoundException("Account not found");
+                var user = await _userService.GetUserByIDAsync(account.UserId) ?? throw new NotFoundException("User not found");
+                var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID) ?? throw new NotFoundException("Account not found");
                 if (transaction.Indicator == '+')
                 {
                     await _transactionService.CreateIncomeAsync(transactionDto);
@@ -77,7 +67,7 @@ public class SchedulingTransactionService : IHostedService, IDisposable
                     await _transactionService.CreateExpenseAsync(transactionDto);
                     if (await _transactionService.IsASavingsTransaction(transactionDto))
                     {
-                        savingsAccount.Balance = savingsAccount.Balance + transactionDto.Amount;
+                        savingsAccount.Balance += transactionDto.Amount;
                         if (savingsAccount.Balance == savingsAccount.TargetAmount)
                         {
                             await _emailService.SendEmailBudgetCapAsync(user.Email, "Reaching savings goal", "You have reached your savings goal. Savings will be transfered to your account");

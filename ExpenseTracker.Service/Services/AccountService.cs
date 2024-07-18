@@ -1,12 +1,11 @@
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Repository.Data;
 using ExpenseTracker.Service.Dto;
-using ExpenseTracker.Repository.Repository;
-using static ExpenseTracker.Service.Dto.AccountDto;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Service.Extensions;
+using ExpenseTracker.Service.CustomException;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -43,14 +42,14 @@ public class AccountService : IAccountService
         return Result.Success<AccountDto, IEnumerable<string>>(accountDto);
     }
 
-    public async Task<Account> GetAccountByID(int accountId)
+    public async Task<Account?> GetAccountByID(int accountId)
     {
         var result = await _accountRepository.GetAccountByID(accountId);
         if (result != null)
         {
             return result;
         }
-        return null;
+        throw new NotFoundException($"Account with id {accountId} not found");
     }
 
     public async Task<Result<AccountDto, IEnumerable<string>>> RemoveAccount(string name, string username)
@@ -60,7 +59,11 @@ public class AccountService : IAccountService
         {
             return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
         }
-        Account account = _context.Accounts.Where(a => a.Name == name && a.UserId == user.Id).FirstOrDefault();
+        var account = await _accountRepository.GetAccountByUserIdAndName(user.Id, name);
+        if (account == null)
+        {
+            throw new NotFoundException("Account not found");
+        }
         if (_accountRepository.DeleteAccount(account).IsFaulted)
         {
             return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during deleting the account." });
@@ -77,6 +80,7 @@ public class AccountService : IAccountService
 
     public async Task<List<Account>> GetAllAccountsOfAUser(string id)
     {
-        return await _accountRepository.GetAllAccountsOfAUser(id);
+        var result = await _accountRepository.GetAllAccountsOfAUser(id) ?? throw new NotFoundException("Accounts not found");
+        return result;
     }
 }

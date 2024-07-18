@@ -10,7 +10,7 @@ namespace ExpenseTracker.Service.Interfaces
         public Task<Result<AccountDto, IEnumerable<string>>> CreateAccount(AccountDto a, string username);
         public Task<Result<AccountDto, IEnumerable<string>>> RemoveAccount(string name, string username);
 
-        public Task<Account> GetAccountByID(int accountId);
+        public Task<Account?> GetAccountByID(int accountId);
 
         public Task<bool> UpdateAccountAsync(AccountDto accountDto);
 

@@ -1,7 +1,6 @@
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Dto;
-using Microsoft.Net.Http.Headers;
 
 namespace ExpenseTracker.Service.Interfaces
 {
@@ -15,7 +14,7 @@ namespace ExpenseTracker.Service.Interfaces
 
         public Task<bool> UpdateSavingsAccount(SavingsAccount savingsAccount);
 
-        public Task<SavingsAccount> GetSavingsAccountByID(int id);
+        public Task<SavingsAccount?> GetSavingsAccountByID(int id);
 
         public Task<bool> CreateSavingsTransactions(string userId, Account account, SavingsAccountDto savingsAccountDto);
 

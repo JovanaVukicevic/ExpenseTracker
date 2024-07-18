@@ -25,51 +25,29 @@ public class ReportingService
             var font = FontFactory.GetFont(FontFactory.HELVETICA, 12);
             var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16);
 
-            // Add title
             var title = new Paragraph("Monthly summary", titleFont);
             title.Alignment = Element.ALIGN_CENTER;
             document.Add(title);
 
-            document.Add(new Paragraph("\n")); // Add some space
+            document.Add(new Paragraph("\n"));
 
-            // Create table with 3 columns
             PdfPTable table = new PdfPTable(4);
             table.WidthPercentage = 100;
 
-            // Add header row
             table.AddCell(GetCell("Incomes", font, true));
             table.AddCell(GetCell("Expenses", font, true));
             table.AddCell(GetCell("Scheduled incomes", font, true));
             table.AddCell(GetCell("Scheduled expenses", font, true));
 
-            List<Transaction> ListOfTransactions = await _transactionService.GetAllTransactionsOfAccount(accountId);
+            var ListOfTransactions = await _transactionService.GetAllTransactionsOfAccount(accountId);
             List<Scheduled> ListOfScheduledTransactions = await _scheduledService.GetAllScheduledOfAccount(accountId);
             List<Transaction> incomeTransactions = [];
             List<Transaction> expenseTransactions = [];
             List<Scheduled> scheduledIncomeTransactions = [];
             List<Scheduled> scheduledExpenseTransactions = [];
-            foreach (var transaction in ListOfTransactions)
-            {
-                if (transaction.Indicator == '+')
-                {
-                    incomeTransactions.Add(transaction);
-                }
-                else
-                {
-                    expenseTransactions.Add(transaction);
-                }
-            }
-            foreach (var scheduledTransaction in ListOfScheduledTransactions)
-            {
-                if (scheduledTransaction.Indicator == '+')
-                {
-                    scheduledIncomeTransactions.Add(scheduledTransaction);
-                }
-                else
-                {
-                    scheduledExpenseTransactions.Add(scheduledTransaction);
-                }
-            }
+
+            SortTransactionsToExpenseOrIncome(ListOfTransactions, incomeTransactions, expenseTransactions);
+            SortScheduledTransactions(ListOfScheduledTransactions, scheduledIncomeTransactions, scheduledExpenseTransactions);
             var maxLengthTransactions = Math.Max(incomeTransactions.Count(), expenseTransactions.Count());
             var maxLengthScheduled = Math.Max(scheduledExpenseTransactions.Count(), scheduledIncomeTransactions.Count());
             var maxLength = Math.Max(maxLengthScheduled, maxLengthTransactions);
@@ -121,6 +99,38 @@ public class ReportingService
             return ms.ToArray();
         }
     }
+
+    private static void SortScheduledTransactions(List<Scheduled> ListOfScheduledTransactions, List<Scheduled> scheduledIncomeTransactions, List<Scheduled> scheduledExpenseTransactions)
+    {
+        foreach (var scheduledTransaction in ListOfScheduledTransactions)
+        {
+            if (scheduledTransaction.Indicator == '+')
+            {
+                scheduledIncomeTransactions.Add(scheduledTransaction);
+            }
+            else
+            {
+                scheduledExpenseTransactions.Add(scheduledTransaction);
+            }
+        }
+    }
+
+
+    private static void SortTransactionsToExpenseOrIncome(List<Transaction> ListOfTransactions, List<Transaction> incomeTransactions, List<Transaction> expenseTransactions)
+    {
+        foreach (var transaction in ListOfTransactions)
+        {
+            if (transaction.Indicator == '+')
+            {
+                incomeTransactions.Add(transaction);
+            }
+            else
+            {
+                expenseTransactions.Add(transaction);
+            }
+        }
+    }
+
 
     private PdfPCell GetCell(string text, Font font, bool isHeader = false)
     {

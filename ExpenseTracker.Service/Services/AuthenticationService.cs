@@ -1,20 +1,15 @@
-
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
 using ExpenseTracker.Service.Dto;
-using ExpenseTracker.Repository.Repository;
 using ExpenseTracker.Repository.Models;
-using static ExpenseTracker.Service.Dto.UserDto;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
+using ExpenseTracker.Service.Extensions;
 
 
 
@@ -30,7 +25,6 @@ public class AuthenticationService : IAuthenticationService
 
     private readonly UserManager<User> _userManager;
 
-    // private readonly IUserService _userService;
     public AuthenticationService(IUserRepository userRepository, UserManager<User> userManager, IConfiguration config, SignInManager<User> signInManager, IAuthenticationRepository authenticationRepository)
     {
         _userRepository = userRepository;
@@ -38,7 +32,6 @@ public class AuthenticationService : IAuthenticationService
         _signInManager = signInManager;
         _config = config;
         _authenticationRepository = authenticationRepository;
-        //_userService = userService;
     }
 
     public async Task<string> GenerateTokenString(LoginUserDto loginUser)
@@ -86,11 +79,11 @@ public class AuthenticationService : IAuthenticationService
 
     }
 
-    public async Task<Result<UserDto, IEnumerable<string>>> RegisterUser(UserDto user)
+    public async Task<Result<UserDto, IEnumerable<string>>> RegisterUser(UserDto userDto)
     {
-        var identityUser = FromDtoToUser(user);
+        var identityUser = userDto.ToUser();
 
-        var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser, user.Password);
+        var resultUser = await _authenticationRepository.RegisterNewUserAsync(identityUser, userDto.Password);
 
         if (resultUser.Succeeded)
         {
@@ -99,7 +92,7 @@ public class AuthenticationService : IAuthenticationService
             {
                 return Result.Failure<UserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
             }
-            return Result.Success<UserDto, IEnumerable<string>>(user);
+            return Result.Success<UserDto, IEnumerable<string>>(userDto);
         }
         return Result.Failure<UserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
 

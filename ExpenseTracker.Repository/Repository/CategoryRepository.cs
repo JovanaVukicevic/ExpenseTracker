@@ -14,11 +14,6 @@ public class CategoryRepository : ICategoryRepository
     {
         _context = context;
     }
-    public bool CategoryExists(string name)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> CreateCategory(Category c)
     {
         await _context.Categories.AddAsync(c);
@@ -35,20 +30,11 @@ public class CategoryRepository : ICategoryRepository
     {
         return await _context.Categories.ToListAsync();
     }
-
-    public double GetBudgetCap(string name)
+    public async Task<Category?> GetCategoryByName(string name)
     {
-        throw new NotImplementedException();
-    }
-
-    public List<Category> GetCategoriesOfAType(char c)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<Category> GetCategoryByName(string name)
-    {
-        return await _context.Categories.Where(c => c.Name == name).FirstOrDefaultAsync();
+        return await _context.Categories
+        .Where(c => c.Name == name)
+        .FirstOrDefaultAsync();
     }
     public async Task<int> UpdateCategory(Category c)
     {

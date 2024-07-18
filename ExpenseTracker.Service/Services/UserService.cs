@@ -2,14 +2,9 @@ using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
-//using ExpenseTracker.Repository.Repository;
-using ExpenseTracker.Repository.Interfaces;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using CSharpFunctionalExtensions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
 using ExpenseTracker.Service.Extensions;
+using CSharpFunctionalExtensions;
+using ExpenseTracker.Service.CustomException;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -26,11 +21,8 @@ public class UserService : IUserService
     }
     public async Task<List<UserDto>> GetUsersAsync()
     {
-        List<User> users = await _userRepository.GetAllUsers();
-        if (users == null)
-        {
-            return null;
-        }
+        var users = await _userRepository.GetAllUsers()
+            ?? throw new NotFoundException("Users not found.");
         List<UserDto> usersDto = [];
         foreach (User user in users)
         {
@@ -42,11 +34,8 @@ public class UserService : IUserService
 
     public async Task<UserDto> GetUserByIDAsync(string userId)
     {
-        User user = await _userRepository.GetUserById(userId);
-        if (user == null)
-        {
-            return null;
-        }
+        var user = await _userRepository.GetUserById(userId)
+            ?? throw new NotFoundException($"User with ID {userId} not found.");
         return user.ToDto();
     }
 
@@ -76,7 +65,7 @@ public class UserService : IUserService
         {
             return Result.Failure<string>("User doesn't exist!");
         }
-        var user = await _userRepository.GetUserByUsername(username);
+        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
         var result = await _userRepository.DeleteUser(user);
         if (result != true)
         {
@@ -88,11 +77,13 @@ public class UserService : IUserService
 
     public async Task<List<User>> GetAllPremiumUsersAsync()
     {
-        return await _userRepository.GetAllPremiumUsers();
+        var result = await _userRepository.GetAllPremiumUsers() ?? throw new NotFoundException("Users not found");
+        return result;
     }
 
-    public async Task<User> GetUserByUsernameAsync(string username)
+    public async Task<User?> GetUserByUsernameAsync(string username)
     {
-        return await _userRepository.GetUserByUsername(username);
+        var result = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException($"User with username {username} was not found.");
+        return result;
     }
 }

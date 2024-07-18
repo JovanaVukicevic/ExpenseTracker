@@ -2,7 +2,8 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
 using ExpenseTracker.Service.EmailConfiguration;
-public class EmailService
+using ExpenseTracker.Service.Interfaces;
+public class EmailService : IEmailService
 {
     private readonly EmailSettings _emailSettings;
 
@@ -42,7 +43,6 @@ public class EmailService
         }
         catch (Exception ex)
         {
-            // Handle exception or log it
             throw new InvalidOperationException(ex.Message);
         }
     }
@@ -72,7 +72,6 @@ public class EmailService
         }
         catch (Exception ex)
         {
-            // Handle exception or log it
             throw new InvalidOperationException(ex.Message);
         }
     }

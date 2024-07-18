@@ -1,23 +1,21 @@
-using ExpenseTracker.Service.Interfaces;
-using ExpenseTracker.Service.Services;
-using ExpenseTracker.Repository.Repository;
-using ExpenseTracker.Repository.Models;
+using System.Text;
+using System.Text.Json.Serialization;
 using ExpenseTracker.Repository.Data;
 using ExpenseTracker.Repository.Interfaces;
+using ExpenseTracker.Repository.Models;
+using ExpenseTracker.Repository.Repository;
+using ExpenseTracker.Service.EmailConfiguration;
+using ExpenseTracker.Service.Interfaces;
+using ExpenseTracker.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using System.Text.Json.Serialization;
-using CronNET;
-using CronScheduler.Extensions;
-using ExpenseTracker.Service.EmailConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -71,6 +69,7 @@ builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>(
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IScheduledRepository, ScheduledRepository>();
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -78,17 +77,18 @@ builder.Services.AddScoped<ISavingsAccountService, SavingsAccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IScheduledService, ScheduledService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<UserManager<User>>();
+builder.Services.AddHostedService<MonthlySummaryService>();
 builder.Services.AddHostedService<SchedulingTransactionService>();
 builder.Services.AddTransient<ReportingService>();
+
+builder.Services.AddScoped<UserManager<User>>();
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<EmailService>();
-builder.Services.AddHostedService<MonthlySummaryService>();
+builder.Services.AddScoped<CustomExceptionFilter>();
 
-// builder.Services.AddScoped<SignInManager<User>>();
 
-//builder.Services.AddCronJob<CronJob>("* * * * *");
-//builder.Services.AddCronJob<AnotherCronJob>("*/2 * * * *");
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -114,14 +114,15 @@ builder.Services.AddAuthentication(options =>
 
 });
 
-builder.Services.AddControllers()
- .AddJsonOptions(options =>
-  {
-      options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-  });
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomExceptionFilter>();
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -130,7 +131,13 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
         c.RoutePrefix = string.Empty;
     });
+    app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseHsts();
+}
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

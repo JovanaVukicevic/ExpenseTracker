@@ -1,7 +1,3 @@
-using System.Drawing;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
@@ -38,20 +34,26 @@ public class UserRepository : IUserRepository
 
     }
 
-    public async Task<User> GetUserById(string id)
+    public async Task<User?> GetUserById(string id)
     {
-        return await _context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+        return await _context.Users
+        .Where(u => u.Id == id)
+        .FirstOrDefaultAsync();
     }
 
-    public async Task<User> GetUserByUsername(string userName)
+    public async Task<User?> GetUserByUsername(string userName)
     {
-        return await _context.Users.Where(u => u.UserName == userName).FirstOrDefaultAsync();
+        return await _context.Users
+        .Where(u => u.UserName == userName)
+        .FirstOrDefaultAsync();
 
     }
 
-    public async Task<User> GetUserByUsernameAndPassword(string username, string password)
+    public async Task<User?> GetUserByUsernameAndPassword(string username, string password)
     {
-        return await _context.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
+        return await _context.Users
+        .Where(u => u.UserName == username)
+        .FirstOrDefaultAsync();
     }
     public async Task<bool> UpdateUser(User user)
     {
@@ -67,6 +69,8 @@ public class UserRepository : IUserRepository
 
     public async Task<List<User>> GetAllPremiumUsers()
     {
-        return await _context.Users.Where(u => u.IsPremuium == true).ToListAsync();
+        return await _context.Users
+        .Where(u => u.IsPremuium == true)
+        .ToListAsync();
     }
 }

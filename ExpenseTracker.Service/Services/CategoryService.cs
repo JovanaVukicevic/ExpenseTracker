@@ -2,8 +2,9 @@ using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Service.Dto;
-using Microsoft.AspNetCore.Identity;
 using CSharpFunctionalExtensions;
+using ExpenseTracker.Service.Extensions;
+using ExpenseTracker.Service.CustomException;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -15,9 +16,9 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Result> CreateCategoryAsync(CategoryDto c)
+    public async Task<Result> CreateCategoryAsync(CategoryDto categoryDto)
     {
-        Category category = FromDtoToCategory(c);
+        Category category = categoryDto.ToCategory();
         var result = await _categoryRepository.CreateCategory(category);
         if (!result)
         {
@@ -25,32 +26,9 @@ public class CategoryService : ICategoryService
         }
         return Result.Success<string>("Category is saved");
     }
-
-    public CategoryDto FromCategoryToDto(Category category)
-    {
-        var catDto = new CategoryDto
-        {
-            Name = category.Name,
-            BudgetCap = category.BudgetCap,
-            Indicator = category.Indicator
-        };
-        return catDto;
-    }
-
-    public Category FromDtoToCategory(CategoryDto categoryDto)
-    {
-        var category = new Category
-        {
-            Name = categoryDto.Name,
-            BudgetCap = categoryDto.BudgetCap,
-            Indicator = categoryDto.Indicator
-        };
-        return category;
-    }
-
     public async Task<List<Category>> GetAllCategoriesAsync()
     {
-        var result = await _categoryRepository.GetAllCategories();
+        var result = await _categoryRepository.GetAllCategories() ?? throw new NotFoundException("Categories not found");
         return result;
     }
 }

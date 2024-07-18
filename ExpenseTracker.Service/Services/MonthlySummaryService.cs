@@ -2,11 +2,7 @@ using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using ExpenseTracker.Service.Services;
-using System.Transactions;
-using System;
 using Microsoft.Extensions.DependencyInjection;
-using ExpenseTracker.Service.Extensions;
 
 namespace ExpenseTracker.Service.Services;
 

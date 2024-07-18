@@ -87,6 +87,14 @@
               "target": "Package",
               "version": "[8.0.7, )"
             },
+            "Microsoft.Build": {
+              "target": "Package",
+              "version": "[17.10.4, )"
+            },
+            "Microsoft.Build.Utilities.Core": {
+              "target": "Package",
+              "version": "[17.10.4, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.7, )"
@@ -122,6 +130,10 @@
             "Microsoft.OpenApi": {
               "target": "Package",
               "version": "[1.6.15, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.70, )"
             },
             "NCrontab": {
               "target": "Package",

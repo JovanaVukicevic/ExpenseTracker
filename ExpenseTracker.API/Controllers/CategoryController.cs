@@ -4,7 +4,6 @@ using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ExpenseTracker.API.Controllers;
 

@@ -4,7 +4,6 @@ using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ExpenseTracker.Repository.Repository;
 public class SavingsAccountRepository : ISavingsAccountRepository
@@ -27,16 +26,8 @@ public class SavingsAccountRepository : ISavingsAccountRepository
     }
     public async Task<bool> CreateSAccount(SavingsAccount sa)
     {
-        try
-        {
-            await _context.SavingsAccounts.AddAsync(sa);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message);
-            return false;
-        }
+        await _context.SavingsAccounts.AddAsync(sa);
+        await _context.SaveChangesAsync();
         return true;
     }
 
@@ -52,27 +43,23 @@ public class SavingsAccountRepository : ISavingsAccountRepository
         return await _context.SavingsAccounts.ToListAsync();
     }
 
-    public async Task<SavingsAccount> GetSAccountByID(int id)
+    public async Task<SavingsAccount?> GetSAccountByID(int id)
     {
-        return await _context.SavingsAccounts.Where(s => s.ID == id).FirstOrDefaultAsync();
+        return await _context.SavingsAccounts
+        .Where(s => s.ID == id)
+        .FirstOrDefaultAsync();
     }
 
-    public async Task<SavingsAccount> GetSAccountsOfAUser(string userId)
+    public async Task<SavingsAccount?> GetSAccountsOfAUser(string userId)
     {
-        return await _context.SavingsAccounts.Where(a => a.UserID == userId).FirstOrDefaultAsync();
+        return await _context.SavingsAccounts
+        .Where(a => a.UserID == userId)
+        .FirstOrDefaultAsync();
     }
 
-    public async Task<Result<SavingsAccount, IEnumerable<string>>> RemoveAccount(string name, string username)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<bool> SAExistsId(int id)
-    {
-        throw new NotImplementedException();
-    }
     public async Task<bool> UpdateSavingsAccount(SavingsAccount sa)
     {
+
         _context.SavingsAccounts.Update(sa);
         await _context.SaveChangesAsync();
         return true;
