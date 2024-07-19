@@ -1,8 +1,10 @@
 using ExpenseTracker.Repository.Constants;
+using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ExpenseTracker.API.Controllers;
 
@@ -37,19 +39,19 @@ public class UserController : ControllerBase
         var user = await _userService.GetUserByIDAsync(id);
         if (user == null)
         {
-            return NotFound();
+            return NotFound("User not found");
         }
-
         return Ok(user);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ServiceFilter(typeof(CustomExceptionFilter))]
     public async Task<ActionResult<UserDto>> RegisterUser([FromBody] UserDto userDto)
     {
         var result = await _userService.RegisterUserAsync(userDto);
-        if (!result.IsSuccess)
+        if (result.IsFailure)
         {
             return BadRequest(result.Error);
         }
@@ -58,13 +60,21 @@ public class UserController : ControllerBase
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ServiceFilter(typeof(CustomExceptionFilter))]
     [Authorize(Roles = Roles.User)]
     public async Task<ActionResult> DeleteUser(string username)
     {
-        var result = await _userService.DeleteUserAsync(username);
-        if (!result.IsSuccess)
+        string usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        if (usernameClaim != username)
         {
-            return BadRequest();
+            return Unauthorized();
+        }
+
+        var result = await _userService.DeleteUserAsync(username);
+        if (result.IsFailure)
+        {
+            return BadRequest("Bad request");
         }
         return NoContent();
 
@@ -72,6 +82,8 @@ public class UserController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ServiceFilter(typeof(CustomExceptionFilter))]
     public async Task<ActionResult> Login(LoginUserDto loginUser)
     {
         if (!ModelState.IsValid)
@@ -79,11 +91,12 @@ public class UserController : ControllerBase
             return BadRequest();
         }
         var result = await _authService.Login(loginUser);
-        if (result.IsSuccess)
+        if (result.IsFailure)
         {
-            return Ok(result.Value);
+            return Unauthorized();
         }
-        return BadRequest(result.Error);
+        return Ok(result.Value);
+
     }
 
 }

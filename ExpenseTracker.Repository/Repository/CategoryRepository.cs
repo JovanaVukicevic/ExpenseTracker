@@ -20,12 +20,6 @@ public class CategoryRepository : ICategoryRepository
         await _context.SaveChangesAsync();
         return true;
     }
-
-    public async Task<int> DeleteCategory(Category c)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<List<Category>> GetAllCategories()
     {
         return await _context.Categories.ToListAsync();
@@ -36,8 +30,16 @@ public class CategoryRepository : ICategoryRepository
         .Where(c => c.Name == name)
         .FirstOrDefaultAsync();
     }
-    public async Task<int> UpdateCategory(Category c)
+
+    public async Task<Category?> GetCategoryByNameAndUserId(string name, string userId)
     {
-        throw new NotImplementedException();
+        return await _context.Categories.Where(c => c.Name == name && c.UserId == userId).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> UpdateCategory(Category category)
+    {
+        _context.Categories.Update(category);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

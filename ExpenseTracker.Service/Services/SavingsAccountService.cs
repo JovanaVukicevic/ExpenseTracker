@@ -31,16 +31,16 @@ public class SavingsAccountService : ISavingsAccountService
         _scheduledService = scheduledService;
     }
 
-    public async Task<Result<SavingsAccountDto, IEnumerable<string>>> CreateSavingsAccount(SavingsAccountDto savingsAccountDto, string username, string accountName)
+    public async Task<Result<SavingsAccountDto, string>> CreateSavingsAccount(SavingsAccountDto savingsAccountDto, string username, string accountName)
     {
         var user = await _userRepository.GetUserByUsername(username);
         if (user == null || username == null)
         {
-            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
+            return Result.Failure<SavingsAccountDto, string>("There is no user with provided username.");
         }
         if (user.IsPremuium == false)
         {
-            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "User cannot have a savings account because he is not premium." });
+            return Result.Failure<SavingsAccountDto, string>("User cannot have a savings account because he is not premium.");
         }
 
         var savingsAccount = savingsAccountDto.ToSavingsAccount();
@@ -56,30 +56,32 @@ public class SavingsAccountService : ISavingsAccountService
         savingsAccount.AmountPerMonth = amountPerMonth;
         if (!await _savingsAccountRepository.CreateSAccount(savingsAccount))
         {
-            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(["Something went wrong during saving the savings account."]);
+            return Result.Failure<SavingsAccountDto, string>("Something went wrong during saving the savings account.");
         }
         savingsAccountDto.AmountPerMonth = amountPerMonth;
 
         if (!await CreateSavingsTransactions(user.Id, account, savingsAccountDto))
         {
-            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(["Something went wrong during saving the savings account."]);
+            return Result.Failure<SavingsAccountDto, string>("Something went wrong during saving the savings account.");
         }
 
         await _accountRepository.UpdateAccount(account);
-        return Result.Success<SavingsAccountDto, IEnumerable<string>>(savingsAccountDto);
+        return Result.Success<SavingsAccountDto, string>(savingsAccountDto);
+
+
 
     }
 
-    public async Task<Result<SavingsAccountDto, IEnumerable<string>>> RemoveSAccount(string username)
+    public async Task<Result<SavingsAccountDto, string>> RemoveSAccount(string username)
     {
         var user = await _userRepository.GetUserByUsername(username);
 
         if (user == null || username == null)
         {
-            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
+            return Result.Failure<SavingsAccountDto, string>("There is no user with provided username.");
         }
 
-        var savingsAccount = await _savingsAccountRepository.GetSAccountsOfAUser(user.Id);
+        SavingsAccount savingsAccount = await _savingsAccountRepository.GetSAccountsOfAUser(user.Id) ?? throw new NotFoundException("Savings account not found");
         if (savingsAccount == null)
         {
             throw new NotFoundException("Savings account not found");
@@ -88,10 +90,10 @@ public class SavingsAccountService : ISavingsAccountService
 
         if (!result)
         {
-            return Result.Failure<SavingsAccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during deleting the savings account." });
+            return Result.Failure<SavingsAccountDto, string>("Something went wrong during deleting the savings account.");
         }
 
-        return Result.Success<SavingsAccountDto, IEnumerable<string>>(savingsAccount.ToDto());
+        return Result.Success<SavingsAccountDto, string>(savingsAccount.ToDto());
 
     }
 
@@ -107,18 +109,14 @@ public class SavingsAccountService : ISavingsAccountService
         return await _savingsAccountRepository.UpdateSavingsAccount(savingsAccount);
     }
 
-    public async Task<SavingsAccount?> GetSavingsAccountByID(int id)
+    public async Task<SavingsAccount> GetSavingsAccountByID(int id)
     {
         return await _savingsAccountRepository.GetSAccountByID(id) ?? throw new NotFoundException("Savings account not found");
     }
 
     public async Task<bool> CreateSavingsTransactions(string userId, Account account, SavingsAccountDto savingsAccountDto)
     {
-        var newAccount = await _savingsAccountRepository.GetSAccountsOfAUser(userId);
-        if (newAccount == null)
-        {
-            throw new NotFoundException("Savings account not found");
-        }
+        SavingsAccount newAccount = await _savingsAccountRepository.GetSAccountsOfAUser(userId) ?? throw new NotFoundException("Savings account not found");
         account.SavingsAccountID = newAccount.ID;
         var scheduledSavingsTransaction = new Scheduled
         {
@@ -131,8 +129,9 @@ public class SavingsAccountService : ISavingsAccountService
             EndDate = savingsAccountDto.TargetDate,
             TimeIntervalInDays = 0
         };
+        User user = await _userRepository.GetUserById(userId) ?? throw new NotFoundException("User not found");
 
-        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto());
+        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto(), user.UserName ?? throw new NotFoundException("User not found"));
         if (result.IsFailure)
         {
             return false;

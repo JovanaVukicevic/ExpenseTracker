@@ -7,7 +7,8 @@ namespace ExpenseTracker.Repository.Interfaces
         Task<List<Category>> GetAllCategories();
         Task<Category?> GetCategoryByName(string name);
         Task<bool> CreateCategory(Category c);
-        Task<int> UpdateCategory(Category c);
-        Task<int> DeleteCategory(Category c);
+        Task<bool> UpdateCategory(Category c);
+
+        Task<Category?> GetCategoryByNameAndUserId(string name, string userId);
     }
 }

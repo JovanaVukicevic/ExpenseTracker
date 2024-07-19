@@ -5,6 +5,9 @@ using Moq;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using System.Security.Principal;
 namespace ExpenseTracker.Tests;
 public class UserControllerTests
 {
@@ -76,6 +79,7 @@ public class UserControllerTests
     [Fact]
     public async Task DeleteUser_returnsActionResult()
     {
+        var mockHttpContext = new Mock<HttpContext>();
         var mockUserService = new Mock<IUserService>();
         mockUserService.Setup(service => service.DeleteUserAsync("userN1ame")).Returns(Task.FromResult(Result.Success()));
         var mockAuthenticationService = new Mock<IAuthenticationService>();

@@ -9,8 +9,8 @@ namespace ExpenseTracker.Service.Interfaces
     {
         public Task<List<ScheduledDto>> GetAllScheduledTransactionsAsync();
 
-        public Task<Result> CreateScheduledIncomeAsync(ScheduledDto scheduledDto);
-        public Task<Result> CreateScheduledExpenseAsync(ScheduledDto scheduledDto);
+        public Task<Result> CreateScheduledIncomeAsync(ScheduledDto scheduledDto, string username);
+        public Task<Result> CreateScheduledExpenseAsync(ScheduledDto scheduledDto, string username);
 
         public Task<Result> DeleteScheduledAsync(int id);
 

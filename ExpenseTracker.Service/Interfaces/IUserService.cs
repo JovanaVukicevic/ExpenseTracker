@@ -16,6 +16,6 @@ namespace ExpenseTracker.Service.Interfaces
         public Task<Result> DeleteUserAsync(string username);
         public Task<List<User>> GetAllPremiumUsersAsync();
 
-        public Task<User?> GetUserByUsernameAsync(string username);
+        public Task<User> GetUserByUsernameAsync(string username);
     }
 }

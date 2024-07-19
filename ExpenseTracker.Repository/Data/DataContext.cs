@@ -155,7 +155,8 @@ public class DataContext : IdentityDbContext<User>
           builder.Entity<Transaction>()
           .HasOne(t => t.Category)
           .WithMany(a => a.TransactionsPerCategory)
-          .HasForeignKey(t => t.CategoryName);
+          .HasForeignKey(t => t.CategoryName)
+          .OnDelete(DeleteBehavior.Restrict);
 
           builder.Entity<Scheduled>().HasKey(t => t.ID);
           builder.Entity<Scheduled>()
@@ -164,5 +165,9 @@ public class DataContext : IdentityDbContext<User>
           .HasForeignKey(s => s.AccountID);
 
           builder.Entity<Category>().HasKey(c => c.Name);
+          builder.Entity<Category>()
+          .HasOne(c => c.User)
+          .WithMany(u => u.Categories)
+          .HasForeignKey(c => c.UserId);
      }
 }

@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ExpenseTrack.Migrations
+namespace ExpenseTracker.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240711102527_FirstMigration")]
-    partial class FirstMigration
+    [Migration("20240719115751_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -40,12 +40,14 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SavingsAccountID")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
@@ -67,7 +69,13 @@ namespace ExpenseTrack.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(1)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Name");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
                 });
@@ -90,6 +98,7 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("TargetAmount")
@@ -99,6 +108,7 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserID")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -124,6 +134,7 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("CategoryName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
@@ -134,6 +145,7 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("nvarchar(1)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
@@ -164,6 +176,7 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("CategoryName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Date")
@@ -174,6 +187,7 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("nvarchar(1)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -203,12 +217,14 @@ namespace ExpenseTrack.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPremuium")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -253,17 +269,17 @@ namespace ExpenseTrack.Migrations
                         {
                             Id = "userId1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "59b1ea18-926f-408a-ae22-8eb3e0199d97",
+                            ConcurrencyStamp = "8ae8974d-e187-46d4-974f-c2bc4fedf410",
                             Email = "ivan.ivanovic123gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ivan",
                             IsPremuium = false,
                             LastName = "Ivanovic",
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEEoGTHxrd0FxEaBMjHaTsRNAwo29xdbPpAxtvLuLS9zL/oexxftJl4Awys59gA9qvw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEbhTlqUtBacLYRYyrTC2d3x4bD8Vbf11+pXjD1ArVEd8EKohwEcM2fUx8mbXrndWw==",
                             PhoneNumberConfirmed = false,
                             SavingsAccountID = 0,
-                            SecurityStamp = "bcbe6104-cc26-4e10-8cee-42eaab33b51a",
+                            SecurityStamp = "fd290807-bd90-4c1f-b22c-847f55f3f402",
                             TwoFactorEnabled = false,
                             UserName = "ivan1234"
                         },
@@ -271,17 +287,17 @@ namespace ExpenseTrack.Migrations
                         {
                             Id = "userId2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a3581ff2-7712-486c-b0ae-9541ce02cf3f",
+                            ConcurrencyStamp = "0cc7a561-032f-4c14-ad3c-3c51d485e141",
                             Email = "jovan.ivanovic123gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Jovan",
                             IsPremuium = false,
                             LastName = "Ivanovic",
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEOccT5tgOBsdDZ62Jh1plawosxK/sOcK1XsRY6O8yaXKYgPwa+ePTtg3jtk2sEP53A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFVaKw+TsZmjwJZre52QdpAjC5R7vzWw40oElnxWXqChwqYeRd3O3qm+Qo6LWiM59A==",
                             PhoneNumberConfirmed = false,
                             SavingsAccountID = 0,
-                            SecurityStamp = "b7dac079-371f-480a-88bb-8009756f2047",
+                            SecurityStamp = "473f33c1-8daf-4c8d-b735-9d4969c81331",
                             TwoFactorEnabled = false,
                             UserName = "jovan1234"
                         },
@@ -289,17 +305,17 @@ namespace ExpenseTrack.Migrations
                         {
                             Id = "userId3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "24c91510-b3f3-4310-98d9-39e1b6acf6cd",
+                            ConcurrencyStamp = "b8b4eaf0-f2bf-4248-9586-aa2444c315af",
                             Email = "milica.bulat@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Milica",
                             IsPremuium = false,
                             LastName = "Bulatovic",
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEOHS+ayVdh5bDTSq9x23PHlfLg67GTPbn6vAbT/9xUmnKDZ2T/J9TJxqx872WiHMfg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE10xzI0W5ydXJoauuyH4K28K3Qd+hA63bjVVCccOM0OT32iYLAKJz64A+5LwItJuQ==",
                             PhoneNumberConfirmed = false,
                             SavingsAccountID = 0,
-                            SecurityStamp = "0ea735d2-d2d9-4546-a67d-02bad549e332",
+                            SecurityStamp = "d81f7dbf-0f4d-44d3-9777-f9e73d5bff6e",
                             TwoFactorEnabled = false,
                             UserName = "milica1234"
                         },
@@ -307,17 +323,17 @@ namespace ExpenseTrack.Migrations
                         {
                             Id = "userId4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "38ce9013-a7aa-4a80-aeb1-9c1a8881d75a",
+                            ConcurrencyStamp = "582904b5-4f38-4147-8756-0664cef364ae",
                             Email = "ivana.milos@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Ivana",
                             IsPremuium = false,
                             LastName = "Milosevic",
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAECgvKW+E7jHD+6mZDkyM6BjyMZ64xyHzJJ3lp7P/XlFgrI/FPr0hIe+YZf12YsIUZA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHkLDG+wsJJiKhxcHhhlCv4Qhj1ppB/eSBZp3Hl4GILedV26C3fjgNEQ6n9GLF4LPQ==",
                             PhoneNumberConfirmed = false,
                             SavingsAccountID = 0,
-                            SecurityStamp = "70f8ae66-3ddb-4364-a434-cb86026c2e0b",
+                            SecurityStamp = "ef2f1522-a7db-470b-89c8-8dd0b6dc45af",
                             TwoFactorEnabled = false,
                             UserName = "ivana123456"
                         },
@@ -325,17 +341,17 @@ namespace ExpenseTrack.Migrations
                         {
                             Id = "userId5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "236d3101-9b0e-4855-9234-884633855006",
+                            ConcurrencyStamp = "fd78cfcd-475c-4eee-8a83-192f43f00cd1",
                             Email = "kaca.bulat@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "Katarina",
                             IsPremuium = false,
                             LastName = "Bulatovic",
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEFZ86p2x+t8aZkH4TzAI2tXyTCBseUM1K75kgoL/fnCpXkXCvbf6+zP+IsvhCY13YQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO3dVWJEntMnZPuXm3NUvaWjQ3TYAmoresQ/pSE8SHVMpctgwkLmLgT5Fag0GetZWg==",
                             PhoneNumberConfirmed = false,
                             SavingsAccountID = 0,
-                            SecurityStamp = "56e5fe84-7c0d-4164-beef-48ce4aa61cfd",
+                            SecurityStamp = "87c0dfc4-b4f2-49f9-a261-9498321be427",
                             TwoFactorEnabled = false,
                             UserName = "katarina1234"
                         });
@@ -503,9 +519,22 @@ namespace ExpenseTrack.Migrations
                 {
                     b.HasOne("ExpenseTracker.Repository.Models.User", "user")
                         .WithMany("Accounts")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Repository.Models.Category", b =>
+                {
+                    b.HasOne("ExpenseTracker.Repository.Models.User", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ExpenseTracker.Repository.Models.SavingsAccount", b =>
@@ -540,7 +569,9 @@ namespace ExpenseTrack.Migrations
 
                     b.HasOne("ExpenseTracker.Repository.Models.Category", "Category")
                         .WithMany("TransactionsPerCategory")
-                        .HasForeignKey("CategoryName");
+                        .HasForeignKey("CategoryName")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Account");
 
@@ -549,7 +580,8 @@ namespace ExpenseTrack.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Repository.Models.Account", b =>
                 {
-                    b.Navigation("SavingsAccount");
+                    b.Navigation("SavingsAccount")
+                        .IsRequired();
 
                     b.Navigation("ScheduledTransactions");
 
@@ -564,6 +596,8 @@ namespace ExpenseTrack.Migrations
             modelBuilder.Entity("ExpenseTracker.Repository.Models.User", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("Categories");
                 });
 #pragma warning restore 612, 618
         }

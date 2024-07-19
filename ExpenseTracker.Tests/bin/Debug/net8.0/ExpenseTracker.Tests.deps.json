@@ -1561,6 +1561,7 @@
           "Microsoft.Build.Utilities.Core": "17.10.4",
           "Microsoft.EntityFrameworkCore": "8.0.7",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.7",
+          "Microsoft.Extensions.Caching.Memory": "8.0.0",
           "Microsoft.Extensions.DependencyInjection": "8.0.0",
           "Microsoft.Extensions.Hosting": "8.0.0",
           "Microsoft.IdentityModel.Tokens": "8.0.0",

@@ -11,6 +11,7 @@ namespace ExpenseTracker.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]s")]
+[ServiceFilter(typeof(CustomExceptionFilter))]
 public class AccountController : ControllerBase
 {
     private readonly IAccountRepository _accountRepository;
@@ -25,8 +26,7 @@ public class AccountController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<List<Account>> GetAllUsers()
+    public async Task<List<Account>> GetAllAccounts()
     {
         var result = await _accountRepository.GetAllAccounts();
         return result;
@@ -34,7 +34,7 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
     public async Task<ActionResult> CreateAnAccount(AccountDto acc)
     {
@@ -57,17 +57,9 @@ public class AccountController : ControllerBase
         var result = await _accountService.RemoveAccount(name, username);
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return NotFound(result.Error);
         }
         return NoContent();
 
     }
-
-
-
-
-
-
-
-
 }

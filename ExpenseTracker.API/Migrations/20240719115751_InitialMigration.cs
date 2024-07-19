@@ -5,27 +5,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace ExpenseTrack.Migrations
+namespace ExpenseTracker.API.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstMigration : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    BudgetCap = table.Column<double>(type: "float", nullable: false),
-                    Indicator = table.Column<string>(type: "nvarchar(1)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Name);
-                });
-
             migrationBuilder.CreateTable(
                 name: "RoleClaims",
                 columns: table => new
@@ -101,8 +88,8 @@ namespace ExpenseTrack.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPremuium = table.Column<bool>(type: "bit", nullable: false),
                     SavingsAccountID = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -145,11 +132,11 @@ namespace ExpenseTrack.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Balance = table.Column<double>(type: "float", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SavingsAccountID = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -158,7 +145,28 @@ namespace ExpenseTrack.Migrations
                         name: "FK_Accounts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    BudgetCap = table.Column<double>(type: "float", nullable: false),
+                    Indicator = table.Column<string>(type: "nvarchar(1)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Name);
+                    table.ForeignKey(
+                        name: "FK_Categories_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -167,9 +175,9 @@ namespace ExpenseTrack.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserID = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AccountID = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Balance = table.Column<double>(type: "float", nullable: false),
                     TargetDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TargetAmount = table.Column<double>(type: "float", nullable: false),
@@ -196,10 +204,10 @@ namespace ExpenseTrack.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TimeIntervalInDays = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     Indicator = table.Column<string>(type: "nvarchar(1)", nullable: false),
-                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -220,10 +228,10 @@ namespace ExpenseTrack.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountID = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     Indicator = table.Column<string>(type: "nvarchar(1)", nullable: false),
-                    CategoryName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    CategoryName = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -238,7 +246,8 @@ namespace ExpenseTrack.Migrations
                         name: "FK_Transactions_Categories_CategoryName",
                         column: x => x.CategoryName,
                         principalTable: "Categories",
-                        principalColumn: "Name");
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -268,16 +277,21 @@ namespace ExpenseTrack.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "IsPremuium", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SavingsAccountID", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "userId1", 0, "59b1ea18-926f-408a-ae22-8eb3e0199d97", "ivan.ivanovic123gmail.com", false, "Ivan", false, "Ivanovic", false, null, null, null, "AQAAAAIAAYagAAAAEEoGTHxrd0FxEaBMjHaTsRNAwo29xdbPpAxtvLuLS9zL/oexxftJl4Awys59gA9qvw==", null, false, 0, "bcbe6104-cc26-4e10-8cee-42eaab33b51a", false, "ivan1234" },
-                    { "userId2", 0, "a3581ff2-7712-486c-b0ae-9541ce02cf3f", "jovan.ivanovic123gmail.com", false, "Jovan", false, "Ivanovic", false, null, null, null, "AQAAAAIAAYagAAAAEOccT5tgOBsdDZ62Jh1plawosxK/sOcK1XsRY6O8yaXKYgPwa+ePTtg3jtk2sEP53A==", null, false, 0, "b7dac079-371f-480a-88bb-8009756f2047", false, "jovan1234" },
-                    { "userId3", 0, "24c91510-b3f3-4310-98d9-39e1b6acf6cd", "milica.bulat@gmail.com", false, "Milica", false, "Bulatovic", false, null, null, null, "AQAAAAIAAYagAAAAEOHS+ayVdh5bDTSq9x23PHlfLg67GTPbn6vAbT/9xUmnKDZ2T/J9TJxqx872WiHMfg==", null, false, 0, "0ea735d2-d2d9-4546-a67d-02bad549e332", false, "milica1234" },
-                    { "userId4", 0, "38ce9013-a7aa-4a80-aeb1-9c1a8881d75a", "ivana.milos@gmail.com", false, "Ivana", false, "Milosevic", false, null, null, null, "AQAAAAIAAYagAAAAECgvKW+E7jHD+6mZDkyM6BjyMZ64xyHzJJ3lp7P/XlFgrI/FPr0hIe+YZf12YsIUZA==", null, false, 0, "70f8ae66-3ddb-4364-a434-cb86026c2e0b", false, "ivana123456" },
-                    { "userId5", 0, "236d3101-9b0e-4855-9234-884633855006", "kaca.bulat@gmail.com", false, "Katarina", false, "Bulatovic", false, null, null, null, "AQAAAAIAAYagAAAAEFZ86p2x+t8aZkH4TzAI2tXyTCBseUM1K75kgoL/fnCpXkXCvbf6+zP+IsvhCY13YQ==", null, false, 0, "56e5fe84-7c0d-4164-beef-48ce4aa61cfd", false, "katarina1234" }
+                    { "userId1", 0, "8ae8974d-e187-46d4-974f-c2bc4fedf410", "ivan.ivanovic123gmail.com", false, "Ivan", false, "Ivanovic", false, null, null, null, "AQAAAAIAAYagAAAAEEbhTlqUtBacLYRYyrTC2d3x4bD8Vbf11+pXjD1ArVEd8EKohwEcM2fUx8mbXrndWw==", null, false, 0, "fd290807-bd90-4c1f-b22c-847f55f3f402", false, "ivan1234" },
+                    { "userId2", 0, "0cc7a561-032f-4c14-ad3c-3c51d485e141", "jovan.ivanovic123gmail.com", false, "Jovan", false, "Ivanovic", false, null, null, null, "AQAAAAIAAYagAAAAEFVaKw+TsZmjwJZre52QdpAjC5R7vzWw40oElnxWXqChwqYeRd3O3qm+Qo6LWiM59A==", null, false, 0, "473f33c1-8daf-4c8d-b735-9d4969c81331", false, "jovan1234" },
+                    { "userId3", 0, "b8b4eaf0-f2bf-4248-9586-aa2444c315af", "milica.bulat@gmail.com", false, "Milica", false, "Bulatovic", false, null, null, null, "AQAAAAIAAYagAAAAEE10xzI0W5ydXJoauuyH4K28K3Qd+hA63bjVVCccOM0OT32iYLAKJz64A+5LwItJuQ==", null, false, 0, "d81f7dbf-0f4d-44d3-9777-f9e73d5bff6e", false, "milica1234" },
+                    { "userId4", 0, "582904b5-4f38-4147-8756-0664cef364ae", "ivana.milos@gmail.com", false, "Ivana", false, "Milosevic", false, null, null, null, "AQAAAAIAAYagAAAAEHkLDG+wsJJiKhxcHhhlCv4Qhj1ppB/eSBZp3Hl4GILedV26C3fjgNEQ6n9GLF4LPQ==", null, false, 0, "ef2f1522-a7db-470b-89c8-8dd0b6dc45af", false, "ivana123456" },
+                    { "userId5", 0, "fd78cfcd-475c-4eee-8a83-192f43f00cd1", "kaca.bulat@gmail.com", false, "Katarina", false, "Bulatovic", false, null, null, null, "AQAAAAIAAYagAAAAEO3dVWJEntMnZPuXm3NUvaWjQ3TYAmoresQ/pSE8SHVMpctgwkLmLgT5Fag0GetZWg==", null, false, 0, "87c0dfc4-b4f2-49f9-a261-9498321be427", false, "katarina1234" }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_UserId",
                 table: "Accounts",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_UserId",
+                table: "Categories",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(

@@ -11,17 +11,19 @@ namespace ExpenseTracker.Service.Interfaces
 
         public Task<List<Transaction>> GetAllTransactionsOfAccount(int accountId);
 
-        public Task<Result> CreateIncomeAsync(TransactionDto transactionDto);
+        public Task<Result> CreateIncomeAsync(TransactionDto transactionDto, string username);
 
-        public Task<Result> CreateExpenseAsync(TransactionDto transactionDto);
+        public Task<Result> CreateExpenseAsync(TransactionDto transactionDto, string username);
 
         public Task<Result> DeleteTransaction(int id);
 
         public Task<double> GetSumOfIncomesForAMonth(int accountId);
 
-        public Task<bool> IsASavingsTransaction(TransactionDto transactionDto);
+        public bool IsASavingsTransaction(TransactionDto transactionDto);
 
         public Task<double> GetSumOfExpensesForAMonth(int accountId);
+
+        public Task<List<TransactionDto>> GetTransactionsByFiltersAsync(string userId, int? accountId, char? indicator, string? category, DateTime? from, DateTime? to);
 
     }
 }

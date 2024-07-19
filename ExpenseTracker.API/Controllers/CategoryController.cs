@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ExpenseTracker.Repository.Constants;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Dto;
@@ -34,9 +35,11 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize(Roles = Roles.User)]
+    [ServiceFilter(typeof(CustomExceptionFilter))]
     public async Task<ActionResult> CreateCategory(CategoryDto category)
     {
-        var result = await _categoryService.CreateCategoryAsync(category);
+        var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var result = await _categoryService.CreateCategoryAsync(category, username);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -45,4 +48,21 @@ public class CategoryController : ControllerBase
 
     }
 
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [Authorize(Roles = Roles.User)]
+    [ServiceFilter(typeof(CustomExceptionFilter))]
+    public async Task<ActionResult> UpdateCategory(CategoryDto category)
+    {
+        var username = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var result = await _categoryService.UpdateCategory(category, username);
+        if (!result)
+        {
+            return Unauthorized();
+        }
+        return NoContent();
+
+    }
 }

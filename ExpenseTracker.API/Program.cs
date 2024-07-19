@@ -43,7 +43,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("ExpenseTrack"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("ExpenseTracker.API"));
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -86,7 +86,7 @@ builder.Services.AddScoped<UserManager<User>>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<CustomExceptionFilter>();
-
+builder.Services.AddMemoryCache();
 
 
 

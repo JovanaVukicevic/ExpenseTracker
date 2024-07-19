@@ -77,4 +77,32 @@ public class TransactionRepository : ITransactionRepository
         .Where(t => t.Indicator == '+' && t.Date.Month == DateTime.Now.Month)
         .SumAsync(t => t.Amount);
     }
+
+    // public async 
+    public async Task<List<Transaction>> GetTransactionsOfAccount(int accountId)
+    {
+        return await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
+    }
+
+    public async Task<List<Transaction>> GetTransactionsByFilter(int? accountId, char? indicator, string? category, DateTime? from, DateTime? to)
+    {
+        IEnumerable<Transaction> listOfAllTransactionsOfAccount = await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
+        if (indicator != null)
+        {
+            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.Indicator == indicator);
+        }
+        if (category != null)
+        {
+            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.CategoryName == category);
+        }
+        if (from != null)
+        {
+            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.Date >= from);
+        }
+        if (to != null)
+        {
+            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.Date <= to);
+        }
+        return listOfAllTransactionsOfAccount.ToList();
+    }
 }

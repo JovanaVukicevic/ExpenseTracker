@@ -4,7 +4,7 @@ public class Account
 {
     public int ID { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public double Balance { get; set; }
 
@@ -12,11 +12,11 @@ public class Account
 
     public int SavingsAccountID { get; set; }
 
-    public SavingsAccount SavingsAccount { get; set; }
+    public SavingsAccount SavingsAccount { get; set; } = null!;
 
-    public User user { get; set; }
+    public User user { get; set; } = null!;
 
-    public string UserId { get; set; }
+    public string UserId { get; set; } = null!;
 
 
     public List<Scheduled> ScheduledTransactions { get; set; } = [];

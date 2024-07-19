@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
+using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.Interfaces;
@@ -11,20 +12,20 @@ namespace ExpenseTracker.Tests;
 
 public class SavingsAccountServiceTests
 {
-    private readonly Mock<IUserRepository> mockUserRepository = new();
-    private readonly Mock<IAccountRepository> mockAccountRepository = new();
-    private readonly Mock<ISavingsAccountRepository> mockSavingsAccountRepository = new();
-    private readonly Mock<IScheduledService> mockScheduledService = new();
+    private readonly Mock<IUserRepository> _mockUserRepository = new();
+    private readonly Mock<IAccountRepository> _mockAccountRepository = new();
+    private readonly Mock<ISavingsAccountRepository> _mockSavingsAccountRepository = new();
+    private readonly Mock<IScheduledService> _mockScheduledService = new();
     private readonly SavingsAccountService savingsAccountService;
 
 
     public SavingsAccountServiceTests()
     {
         savingsAccountService = new SavingsAccountService(
-            mockScheduledService.Object,
-            mockUserRepository.Object,
-            mockAccountRepository.Object,
-            mockSavingsAccountRepository.Object
+            _mockScheduledService.Object,
+            _mockUserRepository.Object,
+            _mockAccountRepository.Object,
+            _mockSavingsAccountRepository.Object
 
         );
     }
@@ -32,7 +33,7 @@ public class SavingsAccountServiceTests
     public async Task GetAllSavingsAccounts_ReturnsTaskListSavingsAccount()
     {
         //Arrange
-        mockSavingsAccountRepository.Setup(service => service.GetAllSavingsAccounts()).Returns(Task.FromResult(new List<SavingsAccount>()));
+        _mockSavingsAccountRepository.Setup(service => service.GetAllSavingsAccounts()).Returns(Task.FromResult(new List<SavingsAccount>()));
 
         //Act
         var result = await savingsAccountService.GetAllSAAsync();
@@ -50,7 +51,7 @@ public class SavingsAccountServiceTests
             Name = "lalala"
         };
 
-        mockSavingsAccountRepository.Setup(service => service.UpdateSavingsAccount(savingsAccount)).Returns(Task.FromResult(true));
+        _mockSavingsAccountRepository.Setup(service => service.UpdateSavingsAccount(savingsAccount)).Returns(Task.FromResult(true));
 
         //Act
         var result = await savingsAccountService.UpdateSavingsAccount(savingsAccount);
@@ -73,9 +74,9 @@ public class SavingsAccountServiceTests
             UserName = "username"
         };
 
-        mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
-        mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser(user.UserName)).Returns(Task.FromResult(savingsAccount));
-        mockSavingsAccountRepository.Setup(service => service.DeleteSavingsAccount(savingsAccount)).Returns(Task.FromResult(true));
+        _mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser(user.UserName)).Returns(Task.FromResult(savingsAccount));
+        _mockSavingsAccountRepository.Setup(service => service.DeleteSavingsAccount(savingsAccount)).Returns(Task.FromResult(true));
 
         //Act
         var result = await savingsAccountService.RemoveSAccount(user.UserName);
@@ -104,8 +105,9 @@ public class SavingsAccountServiceTests
 
         var savingsDto = new SavingsAccountDto { Name = "sdasda" };
         var account = new Account { ID = 1 };
-        mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser("1")).Returns(Task.FromResult(savingsAccount));
-        mockScheduledService.Setup(service => service.CreateScheduledExpenseAsync(scheduledSavingsTransaction)).Returns(Task.FromResult(Result.Success()));
+        _mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser("1")).Returns(Task.FromResult(savingsAccount));
+        _mockScheduledService.Setup(service => service.CreateScheduledExpenseAsync(scheduledSavingsTransaction, "bcxbvsdv")).Returns(Task.FromResult(Result.Success()));
 
         //Act
         var result = await savingsAccountService.CreateSavingsTransactions("1", account, savingsDto);
@@ -123,7 +125,7 @@ public class SavingsAccountServiceTests
             Name = "lalala"
         };
 
-        mockSavingsAccountRepository.Setup(service => service.GetSAccountByID(1)).Returns(Task.FromResult(savingsAccount));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountByID(1)).Returns(Task.FromResult(savingsAccount));
 
         //Act
         var result = await savingsAccountService.GetSavingsAccountByID(1);
@@ -156,12 +158,12 @@ public class SavingsAccountServiceTests
             AccountID = 1
         };
 
-        mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
-        mockAccountRepository.Setup(service => service.GetAccountByUserIdAndName("1", "Name")).Returns(Task.FromResult(account));
-        mockSavingsAccountRepository.Setup(service => service.CreateSAccount(savingsAccount)).Returns(Task.FromResult(true));
-        mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser("1")).Returns(Task.FromResult(savingsAccount));
-        mockScheduledService.Setup(service => service.CreateScheduledExpenseAsync(scheduledSavingsTransaction)).Returns(Task.FromResult(Result.Success()));
-        mockAccountRepository.Setup(service => service.UpdateAccount(account)).Returns(Task.FromResult(true));
+        _mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
+        _mockAccountRepository.Setup(service => service.GetAccountByUserIdAndName("1", "Name")).Returns(Task.FromResult(account));
+        _mockSavingsAccountRepository.Setup(service => service.CreateSAccount(savingsAccount)).Returns(Task.FromResult(true));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser("1")).Returns(Task.FromResult(savingsAccount));
+        _mockScheduledService.Setup(service => service.CreateScheduledExpenseAsync(scheduledSavingsTransaction, user.UserName)).Returns(Task.FromResult(Result.Success()));
+        _mockAccountRepository.Setup(service => service.UpdateAccount(account)).Returns(Task.FromResult(true));
 
         //Act
         var result = await savingsAccountService.CreateSavingsAccount(savingsAccount.ToDto(), user.UserName, account.Name);

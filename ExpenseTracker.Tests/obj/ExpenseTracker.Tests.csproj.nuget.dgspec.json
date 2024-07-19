@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj": {}
+    "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj": {
+    "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj",
+        "projectUniqueName": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj",
         "projectName": "ExpenseTracker.API",
-        "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj",
+        "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj",
         "packagesPath": "C:\\Users\\jovana.vukicevic\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\obj\\",
+        "outputPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jovana.vukicevic\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,8 +26,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj": {
-                "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj"
+              "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj": {
+                "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj"
               }
             }
           }
@@ -115,6 +115,10 @@
               "target": "Package",
               "version": "[8.0.7, )"
             },
+            "Microsoft.Extensions.Caching.Memory": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.Extensions.DependencyInjection": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -191,14 +195,14 @@
         }
       }
     },
-    "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj": {
+    "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj",
+        "projectUniqueName": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj",
         "projectName": "ExpenseTracker.Repository",
-        "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj",
+        "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj",
         "packagesPath": "C:\\Users\\jovana.vukicevic\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\obj\\",
+        "outputPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jovana.vukicevic\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -327,14 +331,14 @@
         }
       }
     },
-    "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj": {
+    "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj",
+        "projectUniqueName": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj",
         "projectName": "ExpenseTracker.Service",
-        "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj",
+        "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\ExpenseTracker.Service.csproj",
         "packagesPath": "C:\\Users\\jovana.vukicevic\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\obj\\",
+        "outputPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Service\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jovana.vukicevic\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -349,8 +353,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj": {
-                "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj"
+              "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj": {
+                "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Repository\\ExpenseTracker.Repository.csproj"
               }
             }
           }
@@ -483,14 +487,14 @@
         }
       }
     },
-    "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj": {
+    "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj",
+        "projectUniqueName": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj",
         "projectName": "ExpenseTracker.Tests",
-        "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj",
+        "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\ExpenseTracker.Tests.csproj",
         "packagesPath": "C:\\Users\\jovana.vukicevic\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\obj\\",
+        "outputPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jovana.vukicevic\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -505,8 +509,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj": {
-                "projectPath": "C:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj"
+              "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj": {
+                "projectPath": "c:\\Users\\jovana.vukicevic\\Desktop\\ExpenseTrackerApp\\ExpenseTracker.API\\ExpenseTracker.API.csproj"
               }
             }
           }

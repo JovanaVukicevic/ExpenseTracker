@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using ExpenseTracker.Repository.Constants;
+using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -8,21 +11,27 @@ namespace ExpenseTracker.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]s")]
+[ServiceFilter(typeof(CustomExceptionFilter))]
 public class TransactionController : ControllerBase
 {
     private readonly ITransactionService _transService;
+    private readonly IUserService _userService;
 
-    public TransactionController(ITransactionService transactionService)
+    public TransactionController(ITransactionService transactionService, IUserService userService)
     {
         _transService = transactionService;
+        _userService = userService;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<List<TransactionDto>> GetAllTransactions()
+    [Authorize(Roles = Roles.User)]
+    public async Task<List<TransactionDto>> GetTransactionsByFilters(int? accountId, char? indicator, string? category, DateTime? from, DateTime? until)
     {
-        var result = await _transService.GetAllTransactionsAsync();
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var user = await _userService.GetUserByUsernameAsync(usernameClaim);
+        var result = await _transService.GetTransactionsByFiltersAsync(user.Id, accountId, indicator, category, from, until);
         return result;
     }
 
@@ -33,10 +42,11 @@ public class TransactionController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateIncome(TransactionDto transDto)
     {
-        var result = await _transService.CreateIncomeAsync(transDto);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var result = await _transService.CreateIncomeAsync(transDto, usernameClaim);
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return Unauthorized(result.Error);
         }
         return NoContent();
     }
@@ -48,10 +58,11 @@ public class TransactionController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateExpense(TransactionDto transDto)
     {
-        var result = await _transService.CreateExpenseAsync(transDto);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var result = await _transService.CreateExpenseAsync(transDto, usernameClaim);
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return Unauthorized(result.Error);
         }
         return NoContent();
 

@@ -11,6 +11,7 @@ namespace ExpenseTracker.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ServiceFilter(typeof(CustomExceptionFilter))]
 public class SavingsAccountController : ControllerBase
 {
     private readonly ISavingsAccountService _savingsService;
@@ -37,7 +38,7 @@ public class SavingsAccountController : ControllerBase
     [HttpPost("Plan")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<SavingsAccountDto> CreateSavingsPlan(SavingsAccountDto savingsAccountDto)
+    public SavingsAccountDto CreateSavingsPlan(SavingsAccountDto savingsAccountDto)
     {
         double amountPerMonth = savingsAccountDto.TargetAmount / (savingsAccountDto.TargetDate.Month - DateTime.Now.Month + 1);
         savingsAccountDto.AmountPerMonth = amountPerMonth;
@@ -56,7 +57,7 @@ public class SavingsAccountController : ControllerBase
         var result = await _savingsService.CreateSavingsAccount(savingsAccount, username, accountName);
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return Unauthorized(result.Error);
         }
         return Ok(result.Value);
 
@@ -72,7 +73,7 @@ public class SavingsAccountController : ControllerBase
         var result = await _savingsService.RemoveSAccount(username);
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return Unauthorized(result.Error);
         }
         return Ok(result.Value);
 

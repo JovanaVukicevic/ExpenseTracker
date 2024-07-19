@@ -13,18 +13,24 @@ public class ScheduledService : IScheduledService
     private readonly IScheduledRepository _scheduledRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IAccountRepository _accountRepository;
+    private readonly IUserRepository _userRepository;
     private readonly EmailService _emailService;
-    public ScheduledService(IScheduledRepository scheduledRepository, EmailService emailService, ICategoryRepository categoryRepository, IAccountRepository accountRepository)
+
+    public ScheduledService(IScheduledRepository scheduledRepository, IUserRepository userRepository, EmailService emailService, ICategoryRepository categoryRepository, IAccountRepository accountRepository)
     {
         _scheduledRepository = scheduledRepository;
         _categoryRepository = categoryRepository;
         _accountRepository = accountRepository;
         _emailService = emailService;
+        _userRepository = userRepository;
     }
 
-    public async Task<Result> CreateScheduledIncomeAsync(ScheduledDto scheduledDto)
+    public async Task<Result> CreateScheduledIncomeAsync(ScheduledDto scheduledDto, string username)
     {
         Scheduled scheduled = scheduledDto.ToScheduled();
+        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
+        Account account = await _accountRepository.GetAccountByID(scheduledDto.AccountID) ?? throw new NotFoundException("Account not found.");
+        var category = await _categoryRepository.GetCategoryByNameAndUserId(scheduledDto.CategoryName, user.Id) ?? throw new NotFoundException("Category not found");
         scheduled.Indicator = '+';
         var result = await _scheduledRepository.CreateSchedule(scheduled);
         if (!result)
@@ -34,16 +40,18 @@ public class ScheduledService : IScheduledService
         return Result.Success<string>("Scheduled income is saved");
     }
 
-    public async Task<Result> CreateScheduledExpenseAsync(ScheduledDto scheduledDto)
+    public async Task<Result> CreateScheduledExpenseAsync(ScheduledDto scheduledDto, string username)
     {
         Scheduled scheduled = scheduledDto.ToScheduled();
         scheduled.Indicator = '-';
-        double? sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.Month);
-        double? sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.Month);
+        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
+        double sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.Month);
+        double sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.Month);
 
         if (scheduledDto.StartDate.Month == DateTime.Now.Month)
         {
-            Account account = await _accountRepository.GetAccountByID(scheduledDto.AccountID) ?? throw new NotFoundException("Account not found");
+            Account account = await _accountRepository.GetAccountByID(scheduledDto.AccountID) ?? throw new NotFoundException("Account not found.");
+            //var category = await _categoryRepository.GetCategoryByNameAndUserId(scheduledDto.CategoryName, user.Id) ?? throw new NotFoundException("Category not found");
             if (sumIncome + account.Balance < sumExpense + scheduledDto.Amount)
             {
                 return Result.Failure<string>("There is not enough funds for this transaction");
@@ -70,7 +78,7 @@ public class ScheduledService : IScheduledService
         }
 
         double sumCategory = await _scheduledRepository.GetScheduledExpensesOfACategory(scheduledDto.StartDate.Month, scheduledDto.CategoryName);
-        Category category = await _categoryRepository.GetCategoryByName(scheduledDto.CategoryName) ?? throw new NotFoundException("Category not found");
+        Category category = await _categoryRepository.GetCategoryByNameAndUserId(scheduledDto.CategoryName, user.Id) ?? throw new NotFoundException("Category not found");
 
         if (IsOverBudget(scheduledDto.Amount, sumCategory, category.BudgetCap))
         {

@@ -6,6 +6,8 @@ using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.CustomException;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -16,60 +18,66 @@ public class AccountService : IAccountService
     private readonly IUserRepository _userRepository;
 
     private readonly IAccountRepository _accountRepository;
+    private readonly IMemoryCache _cache;
 
-    public AccountService(DataContext context, IUserRepository userRepository, IAccountRepository accountRepository)
+    public AccountService(DataContext context, IMemoryCache cache, IUserRepository userRepository, IAccountRepository accountRepository)
     {
         _context = context;
         _userRepository = userRepository;
         _accountRepository = accountRepository;
+        _cache = cache;
     }
 
-    public async Task<Result<AccountDto, IEnumerable<string>>> CreateAccount(AccountDto accountDto, string username)
+    public async Task<Result<AccountDto, string>> CreateAccount(AccountDto accountDto, string username)
     {
         var user = await _userRepository.GetUserByUsername(username);
         if (user == null || username == null)
         {
-            return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
+            return Result.Failure<AccountDto, string>("There is no user with provided username.");
         }
-        var account = accountDto.ToAccount();
+        Account account = accountDto.ToAccount();
         account.UserId = user.Id;
         var result = await _accountRepository.AddAccount(account);
         if (!result)
         {
-            return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during saving the account." });
+            return Result.Failure<AccountDto, string>("Something went wrong during saving the account.");
         }
 
-        return Result.Success<AccountDto, IEnumerable<string>>(accountDto);
+        return Result.Success<AccountDto, string>(accountDto);
     }
 
-    public async Task<Account?> GetAccountByID(int accountId)
+    public async Task<Account> GetAccountByID(int accountId)
     {
-        var result = await _accountRepository.GetAccountByID(accountId);
-        if (result != null)
+        var cacheKey = $"Account-{accountId}";
+        if (!_cache.TryGetValue(cacheKey, out Account? result))
         {
-            return result;
+            result = await _accountRepository.GetAccountByID(accountId) ?? throw new NotFoundException("Account not found");
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromSeconds(3));
+
+            _cache.Set(cacheKey, result, cacheEntryOptions);
         }
-        throw new NotFoundException($"Account with id {accountId} not found");
+        // if (result != null)
+        // {
+        return result ?? throw new NotFoundException("Account not found");
+        // }
+        // throw new NotFoundException($"Account with id {accountId} not found");
     }
 
-    public async Task<Result<AccountDto, IEnumerable<string>>> RemoveAccount(string name, string username)
+    public async Task<Result<AccountDto, string>> RemoveAccount(string name, string username)
     {
         var user = await _userRepository.GetUserByUsername(username);
         if (user == null || username == null)
         {
-            return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "There is no user with provided username." });
+            return Result.Failure<AccountDto, string>("There is no user with provided username.");
         }
-        var account = await _accountRepository.GetAccountByUserIdAndName(user.Id, name);
-        if (account == null)
-        {
-            throw new NotFoundException("Account not found");
-        }
+        Account account = await _accountRepository.GetAccountByUserIdAndName(user.Id, name) ?? throw new NotFoundException("Account not found");
         if (_accountRepository.DeleteAccount(account).IsFaulted)
         {
-            return Result.Failure<AccountDto, IEnumerable<string>>(new List<string> { "Something went wrong during deleting the account." });
+            return Result.Failure<AccountDto, string>("Something went wrong during deleting the account.");
         }
 
-        return Result.Success<AccountDto, IEnumerable<string>>(account.ToDto());
+        return Result.Success<AccountDto, string>(account.ToDto());
 
     }
 
@@ -84,3 +92,4 @@ public class AccountService : IAccountService
         return result;
     }
 }
+

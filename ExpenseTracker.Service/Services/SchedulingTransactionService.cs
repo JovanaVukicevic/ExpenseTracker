@@ -29,7 +29,7 @@ public class SchedulingTransactionService : IHostedService, IDisposable
     {
         _logger.LogInformation("Scheduled Transaction Service is starting.");
 
-        _timer = new Timer(ExecuteTask, null, TimeSpan.Zero, TimeSpan.FromMinutes(10));
+        _timer = new Timer(ExecuteTask, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
         return Task.CompletedTask;
     }
 
@@ -60,12 +60,12 @@ public class SchedulingTransactionService : IHostedService, IDisposable
                 var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID) ?? throw new NotFoundException("Account not found");
                 if (transaction.Indicator == '+')
                 {
-                    await _transactionService.CreateIncomeAsync(transactionDto);
+                    await _transactionService.CreateIncomeAsync(transactionDto, user.Username);
                 }
                 else
                 {
-                    await _transactionService.CreateExpenseAsync(transactionDto);
-                    if (await _transactionService.IsASavingsTransaction(transactionDto))
+                    await _transactionService.CreateExpenseAsync(transactionDto, user.Username);
+                    if (_transactionService.IsASavingsTransaction(transactionDto))
                     {
                         savingsAccount.Balance += transactionDto.Amount;
                         if (savingsAccount.Balance == savingsAccount.TargetAmount)
@@ -79,7 +79,7 @@ public class SchedulingTransactionService : IHostedService, IDisposable
                                 Amount = savingsAccount.TargetAmount,
                                 AccountID = transactionDto.AccountID,
                             };
-                            await _transactionService.CreateIncomeAsync(savingsTransferDto);
+                            await _transactionService.CreateIncomeAsync(savingsTransferDto, user.Username);
                             savingsAccount.Balance = 0;
                             savingsAccount.AmountPerMonth = 0;
                             savingsAccount.TargetAmount = 0;

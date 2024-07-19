@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +10,7 @@ namespace ExpenseTracker.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ServiceFilter(typeof(CustomExceptionFilter))]
 public class ScheduledController : ControllerBase
 {
     private readonly IScheduledService _scheduledService;
@@ -33,7 +36,8 @@ public class ScheduledController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateScheduledIncome(ScheduledDto scheduledDto)
     {
-        var result = await _scheduledService.CreateScheduledIncomeAsync(scheduledDto);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var result = await _scheduledService.CreateScheduledIncomeAsync(scheduledDto, usernameClaim);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -48,7 +52,8 @@ public class ScheduledController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateScheduledExpense(ScheduledDto scheduledDto)
     {
-        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledDto);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledDto, usernameClaim);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
@@ -67,7 +72,7 @@ public class ScheduledController : ControllerBase
         var result = await _scheduledService.DeleteScheduledAsync(id);
         if (result.IsFailure)
         {
-            return BadRequest(result.Error);
+            return NotFound(result.Error);
         }
         return NoContent();
 

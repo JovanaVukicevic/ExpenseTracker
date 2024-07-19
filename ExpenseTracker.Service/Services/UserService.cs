@@ -5,6 +5,9 @@ using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Service.Extensions;
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Service.CustomException;
+using Microsoft.Extensions.Caching.Memory;
+using iTextSharp.text.log;
+using Microsoft.Extensions.Logging;
 
 namespace ExpenseTracker.Service.Services;
 
@@ -13,11 +16,18 @@ public class UserService : IUserService
     public readonly IUserRepository _userRepository;
 
     public readonly IAuthenticationService _authService;
+    private readonly IMemoryCache _cache;
 
-    public UserService(IUserRepository userRepository, IAuthenticationService authService)
+    private readonly ILogger<UserService> _logger;
+    private readonly IAccountService _accountService;
+
+    public UserService(IUserRepository userRepository, IAccountService accountService, IAuthenticationService authService, IMemoryCache cache, ILogger<UserService> logger)
     {
         _userRepository = userRepository;
         _authService = authService;
+        _logger = logger;
+        _cache = cache;
+        _accountService = accountService;
     }
     public async Task<List<UserDto>> GetUsersAsync()
     {
@@ -34,9 +44,18 @@ public class UserService : IUserService
 
     public async Task<UserDto> GetUserByIDAsync(string userId)
     {
-        var user = await _userRepository.GetUserById(userId)
-            ?? throw new NotFoundException($"User with ID {userId} not found.");
-        return user.ToDto();
+        var cacheKey = $"UserDto-{userId}";
+        if (!_cache.TryGetValue(cacheKey, out UserDto? result))
+        {
+            _logger.LogInformation("Getting user from database because it doesn't exist in cache.");
+            var user = (await _userRepository.GetUserById(userId)) ?? throw new NotFoundException("User not found");
+            result = user.ToDto();
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+            .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+            _logger.LogInformation("Putting user in cache.");
+            _cache.Set(cacheKey, result, cacheEntryOptions);
+        }
+        return result ?? throw new NotFoundException($"User with ID {userId} not found.");
     }
 
     public async Task<Result> RegisterUserAsync(UserDto userDto)
@@ -55,6 +74,12 @@ public class UserService : IUserService
         if (!result.IsSuccess)
         {
             return Result.Failure<string>("Error while registering a user");
+        }
+        var newAccount = new AccountDto { Name = "Default account" };
+        var createAccount = await _accountService.CreateAccount(newAccount, userDto.Username);
+        if (!createAccount.IsSuccess)
+        {
+            return Result.Failure<string>("Something went wrong while creating default account");
         }
         return Result.Success<string>("Registration was succesfull!");
     }
@@ -81,7 +106,7 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<User?> GetUserByUsernameAsync(string username)
+    public async Task<User> GetUserByUsernameAsync(string username)
     {
         var result = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException($"User with username {username} was not found.");
         return result;
