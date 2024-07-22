@@ -26,17 +26,17 @@ public class ScheduledRepository : IScheduledRepository
         return true;
     }
 
-    public async Task<double> GetAllScheduledExpenseForAMonth(int month)
+    public async Task<double> GetAllScheduledExpenseForAMonth(DateTime date)
     {
         return await _context.Schedules
-        .Where(s => s.Indicator == '+' && s.StartDate.Month == month)
+        .Where(s => s.Indicator == '+' && s.StartDate.Month == date.Month && s.StartDate.Year == date.Year)
         .SumAsync(s => s.Amount);
     }
 
-    public async Task<double> GetAllScheduledIncomeForAMonth(int month)
+    public async Task<double> GetAllScheduledIncomeForAMonth(DateTime date)
     {
         return await _context.Schedules
-        .Where(s => s.Indicator == '+' && s.StartDate.Month == month)
+        .Where(s => s.Indicator == '+' && s.StartDate.Month == date.Month && s.StartDate.Year == date.Year)
         .SumAsync(s => s.Amount);
     }
 

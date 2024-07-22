@@ -23,7 +23,7 @@ namespace ExpenseTracker.Service.Interfaces
 
         public Task<double> GetSumOfExpensesForAMonth(int accountId);
 
-        public Task<List<TransactionDto>> GetTransactionsByFiltersAsync(string userId, int? accountId, char? indicator, string? category, DateTime? from, DateTime? to);
+        public Task<PaginatedList<TransactionDto>> GetTransactionsByFiltersAsync(string userId, int? accountId, char? indicator, string? category, DateTime? from, DateTime? to);
 
     }
 }

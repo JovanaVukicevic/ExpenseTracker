@@ -20,7 +20,7 @@ namespace ExpenseTracker.Repository.Interfaces
         Task<double> GetSumOfIncomesForAMonth(int accountId);
 
         Task<List<Transaction>> GetTransactionsOfAccount(int accountId);
-        Task<List<Transaction>> GetTransactionsByFilter(int? accoundId, char? indicator, string? category, DateTime? from, DateTime? to);
+        Task<PaginatedList<Transaction>> GetTransactionsByFilter(int pageIndex, int pageSize, List<int?> accoundId, char? indicator, string? category, DateTime? from, DateTime? to);
 
 
 

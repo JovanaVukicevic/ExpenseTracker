@@ -127,34 +127,35 @@ public class TransactionService : ITransactionService
         return false;
     }
 
-    public async Task<List<TransactionDto>> GetTransactionsByFiltersAsync(string userId, int? accountId, char? indicator, string? category, DateTime? from, DateTime? to)
+    public async Task<PaginatedList<TransactionDto>> GetTransactionsByFiltersAsync(string userId, int? accountId, char? indicator, string? category, DateTime? from, DateTime? to)
     {
         if (accountId == null)
         {
             List<Account> listOfAccounts = await _accountRepository.GetAllAccountsOfAUser(userId);
-            List<Transaction> allTransactions = [];
+            List<int?> listOfIndex = [];
             foreach (Account account in listOfAccounts)
             {
-                var result = await _transactionRepository.GetTransactionsByFilter(account.ID, indicator, category, from, to);
-                allTransactions.AddRange(result);
+                listOfIndex.Add(account.ID);
             }
+            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, listOfIndex, indicator, category, from, to);
             List<TransactionDto> listOfDtos = [];
-            foreach (Transaction transaction in allTransactions)
+            foreach (Transaction transaction in result.Items)
             {
                 listOfDtos.Add(transaction.ToDto());
             }
-            return listOfDtos;
+            return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
         }
         else
         {
-            List<Transaction> allTransactions = [];
-            allTransactions.AddRange(await _transactionRepository.GetTransactionsByFilter(accountId, indicator, category, from, to));
+            List<int?> listOfIndex = [];
+            listOfIndex.Add(accountId);
+            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, listOfIndex, indicator, category, from, to);
             List<TransactionDto> listOfDtos = [];
-            foreach (Transaction transaction in allTransactions)
+            foreach (Transaction transaction in result.Items)
             {
                 listOfDtos.Add(transaction.ToDto());
             }
-            return listOfDtos;
+            return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
         }
     }
 }

@@ -117,10 +117,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<CustomExceptionFilter>();
-}).AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

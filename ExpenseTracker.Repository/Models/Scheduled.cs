@@ -10,7 +10,7 @@ public class Scheduled
 
     public DateTime StartDate { get; set; }
 
-    public DateTime EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
     public int TimeIntervalInDays { get; set; }
 

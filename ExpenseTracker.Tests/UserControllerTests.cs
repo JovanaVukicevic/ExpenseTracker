@@ -8,6 +8,7 @@ using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
+using ExpenseTracker.Repository.Models;
 namespace ExpenseTracker.Tests;
 public class UserControllerTests
 {
@@ -79,14 +80,24 @@ public class UserControllerTests
     [Fact]
     public async Task DeleteUser_returnsActionResult()
     {
+        var user = new User { UserName = "username" };
         var mockHttpContext = new Mock<HttpContext>();
         var mockUserService = new Mock<IUserService>();
-        mockUserService.Setup(service => service.DeleteUserAsync("userN1ame")).Returns(Task.FromResult(Result.Success()));
+        mockUserService.Setup(service => service.DeleteUserAsync(user.UserName)).Returns(Task.FromResult(Result.Success()));
         var mockAuthenticationService = new Mock<IAuthenticationService>();
         var userController = new UserController(mockAuthenticationService.Object, mockUserService.Object);
+        var claimsIdentity = new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.Name, user.UserName)
+        });
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        userController.ControllerContext = new ControllerContext()
+        {
+            HttpContext = new DefaultHttpContext() { User = claimsPrincipal }
+        };
 
         //Act
-        var actionResult = await userController.DeleteUser("userN1ame");
+        var actionResult = await userController.DeleteUser(user.UserName);
 
         //Assert
         Assert.IsType<NoContentResult>(actionResult);

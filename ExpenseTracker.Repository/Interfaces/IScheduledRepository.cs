@@ -11,9 +11,9 @@ namespace ExpenseTracker.Repository.Interfaces
         Task<bool> DeleteScheduled(Scheduled s);
         Task<List<Scheduled>> GetAllScheduledTransactionsOfAccount(int accountId);
 
-        Task<double> GetAllScheduledIncomeForAMonth(int month);
+        Task<double> GetAllScheduledIncomeForAMonth(DateTime date);
 
-        Task<double> GetAllScheduledExpenseForAMonth(int month);
+        Task<double> GetAllScheduledExpenseForAMonth(DateTime date);
 
         Task<double> GetScheduledExpensesOfACategory(int month, string categoryName);
 

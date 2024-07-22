@@ -2,6 +2,7 @@ using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace ExpenseTracker.Repository.Repository;
 public class TransactionRepository : ITransactionRepository
@@ -84,25 +85,44 @@ public class TransactionRepository : ITransactionRepository
         return await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
     }
 
-    public async Task<List<Transaction>> GetTransactionsByFilter(int? accountId, char? indicator, string? category, DateTime? from, DateTime? to)
+    public async Task<PaginatedList<Transaction>> GetTransactionsByFilter(int pageIndex, int pageSize, List<int?> accountId, char? indicator, string? category, DateTime? from, DateTime? to)
     {
-        IEnumerable<Transaction> listOfAllTransactionsOfAccount = await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
+        var query = _context.Transactions
+                    .Include(t => t.Account)
+                    .Where(t => accountId.Contains(t.AccountID));
         if (indicator != null)
         {
-            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.Indicator == indicator);
+            query = query.Where(t => t.Indicator == indicator);
         }
         if (category != null)
         {
-            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.CategoryName == category);
+            query = query.Where(t => t.CategoryName == category);
         }
         if (from != null)
         {
-            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.Date >= from);
+            query = query.Where(t => t.Date >= from);
         }
         if (to != null)
         {
-            listOfAllTransactionsOfAccount = listOfAllTransactionsOfAccount.Where(t => t.Date <= to);
+            query = query.Where(t => t.Date <= to);
         }
-        return listOfAllTransactionsOfAccount.ToList();
+        var items = await query.Select(t => new Transaction
+        {
+            ID = t.ID,
+            AccountID = t.Account.ID,
+            Date = t.Date,
+            Indicator = t.Indicator,
+            CategoryName = t.CategoryName,
+            Amount = t.Amount,
+            Name = t.Name
+
+        })
+        .Skip((pageIndex - 1) * pageSize)
+        .Take(pageSize)
+        .ToListAsync();
+
+        var totalPages = (int)Math.Ceiling(await query.CountAsync() / (double)pageSize);
+
+        return new PaginatedList<Transaction>(items, pageIndex, totalPages);
     }
 }

@@ -7,6 +7,7 @@ using ExpenseTracker.Service.Interfaces;
 using ExpenseTracker.Service.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using ExpenseTracker.Service.CustomException;
+using Org.BouncyCastle.Asn1.Cmp;
 
 
 
@@ -54,6 +55,10 @@ public class SavingsAccountService : ISavingsAccountService
 
         double amountPerMonth = savingsAccountDto.TargetAmount / (savingsAccountDto.TargetDate.Month - DateTime.Now.Month + 1);
         savingsAccount.AmountPerMonth = amountPerMonth;
+        if (account.Balance < savingsAccount.AmountPerMonth)
+        {
+            return Result.Failure<SavingsAccountDto, string>("You have to make a transaction on your main account.");
+        }
         if (!await _savingsAccountRepository.CreateSAccount(savingsAccount))
         {
             return Result.Failure<SavingsAccountDto, string>("Something went wrong during saving the savings account.");
@@ -129,9 +134,9 @@ public class SavingsAccountService : ISavingsAccountService
             EndDate = savingsAccountDto.TargetDate,
             TimeIntervalInDays = 0
         };
+        await _accountRepository.UpdateAccount(account);
         User user = await _userRepository.GetUserById(userId) ?? throw new NotFoundException("User not found");
-
-        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto(), user.UserName ?? throw new NotFoundException("User not found"));
+        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto(), user.UserName);
         if (result.IsFailure)
         {
             return false;

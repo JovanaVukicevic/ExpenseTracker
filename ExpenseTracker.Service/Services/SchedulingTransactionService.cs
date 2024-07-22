@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.Dto;
+using System.Threading;
 using ExpenseTracker.Service.CustomException;
 
 
@@ -19,6 +20,7 @@ public class SchedulingTransactionService : IHostedService, IDisposable
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _timer = new Timer(ExecuteTask, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
     }
     public void Dispose()
     {
@@ -29,11 +31,11 @@ public class SchedulingTransactionService : IHostedService, IDisposable
     {
         _logger.LogInformation("Scheduled Transaction Service is starting.");
 
-        _timer = new Timer(ExecuteTask, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        _timer.Change(TimeSpan.Zero, TimeSpan.FromMinutes(5));
         return Task.CompletedTask;
     }
 
-    private void ExecuteTask(object state)
+    private void ExecuteTask(object? state)
     {
         PerformTransaction();
     }

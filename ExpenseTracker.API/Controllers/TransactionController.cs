@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using ExpenseTracker.Repository.Constants;
+using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
@@ -26,13 +27,14 @@ public class TransactionController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize(Roles = Roles.User)]
-    public async Task<List<TransactionDto>> GetTransactionsByFilters(int? accountId, char? indicator, string? category, DateTime? from, DateTime? until)
+    public async Task<IActionResult> GetTransactionsByFilters(int? accountId, char? indicator, string? category, DateTime? from, DateTime? until)
     {
-        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
         var user = await _userService.GetUserByUsernameAsync(usernameClaim);
         var result = await _transService.GetTransactionsByFiltersAsync(user.Id, accountId, indicator, category, from, until);
-        return result;
+        return Ok(result);
     }
 
     [HttpPost("Income")]
@@ -42,7 +44,7 @@ public class TransactionController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateIncome(TransactionDto transDto)
     {
-        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
         var result = await _transService.CreateIncomeAsync(transDto, usernameClaim);
         if (result.IsFailure)
         {
@@ -58,7 +60,7 @@ public class TransactionController : ControllerBase
     [Authorize]
     public async Task<ActionResult> CreateExpense(TransactionDto transDto)
     {
-        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
         var result = await _transService.CreateExpenseAsync(transDto, usernameClaim);
         if (result.IsFailure)
         {

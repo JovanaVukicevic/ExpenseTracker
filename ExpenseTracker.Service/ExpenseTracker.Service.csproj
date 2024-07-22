@@ -8,7 +8,6 @@
     <PackageReference Include="CronScheduler.AspNetCore" Version="3.1.0" />
     <PackageReference Include="CronScheduler.Extensions" Version="3.1.0" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.5" />
-    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
@@ -33,6 +32,7 @@
     <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExpenseTracker.Repository\ExpenseTracker.Repository.csproj" />

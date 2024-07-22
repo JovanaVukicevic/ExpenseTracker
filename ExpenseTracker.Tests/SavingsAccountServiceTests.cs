@@ -71,18 +71,19 @@ public class SavingsAccountServiceTests
         };
         var user = new User
         {
+            Id = "asd",
             UserName = "username"
         };
 
         _mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
-        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser(user.UserName)).Returns(Task.FromResult(savingsAccount));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser(user.Id)).Returns(Task.FromResult(savingsAccount));
         _mockSavingsAccountRepository.Setup(service => service.DeleteSavingsAccount(savingsAccount)).Returns(Task.FromResult(true));
 
         //Act
         var result = await savingsAccountService.RemoveSAccount(user.UserName);
 
         //Assert
-        Assert.IsType<Result<SavingsAccountDto, IEnumerable<string>>>(result);
+        Assert.IsType<Result<SavingsAccountDto, string>>(result);
 
     }
 
@@ -96,6 +97,7 @@ public class SavingsAccountServiceTests
         };
         var user = new User
         {
+            Id = "asda",
             UserName = "username"
         };
         var scheduledSavingsTransaction = new ScheduledDto
@@ -105,12 +107,12 @@ public class SavingsAccountServiceTests
 
         var savingsDto = new SavingsAccountDto { Name = "sdasda" };
         var account = new Account { ID = 1 };
-        _mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
-        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser("1")).Returns(Task.FromResult(savingsAccount));
+        _mockUserRepository.Setup(service => service.GetUserById(user.Id)).Returns(Task.FromResult(user));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser(user.Id)).Returns(Task.FromResult(savingsAccount));
         _mockScheduledService.Setup(service => service.CreateScheduledExpenseAsync(scheduledSavingsTransaction, "bcxbvsdv")).Returns(Task.FromResult(Result.Success()));
-
+        _mockAccountRepository.Setup(service => service.UpdateAccount(account)).Returns(Task.FromResult(true));
         //Act
-        var result = await savingsAccountService.CreateSavingsTransactions("1", account, savingsDto);
+        var result = await savingsAccountService.CreateSavingsTransactions(user.Id, account, savingsDto);
 
         //Assert
         Assert.True(result);
@@ -141,6 +143,7 @@ public class SavingsAccountServiceTests
         //Arrange
         var user = new User
         {
+            Id = "sada",
             UserName = "username"
         };
         var account = new Account
@@ -161,7 +164,7 @@ public class SavingsAccountServiceTests
         _mockUserRepository.Setup(service => service.GetUserByUsername(user.UserName)).Returns(Task.FromResult(user));
         _mockAccountRepository.Setup(service => service.GetAccountByUserIdAndName("1", "Name")).Returns(Task.FromResult(account));
         _mockSavingsAccountRepository.Setup(service => service.CreateSAccount(savingsAccount)).Returns(Task.FromResult(true));
-        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser("1")).Returns(Task.FromResult(savingsAccount));
+        _mockSavingsAccountRepository.Setup(service => service.GetSAccountsOfAUser(user.Id)).Returns(Task.FromResult(savingsAccount));
         _mockScheduledService.Setup(service => service.CreateScheduledExpenseAsync(scheduledSavingsTransaction, user.UserName)).Returns(Task.FromResult(Result.Success()));
         _mockAccountRepository.Setup(service => service.UpdateAccount(account)).Returns(Task.FromResult(true));
 
@@ -169,6 +172,6 @@ public class SavingsAccountServiceTests
         var result = await savingsAccountService.CreateSavingsAccount(savingsAccount.ToDto(), user.UserName, account.Name);
 
         //Assert
-        Assert.IsType<Result<SavingsAccountDto, IEnumerable<string>>>(result);
+        Assert.IsType<Result<SavingsAccountDto, string>>(result);
     }
 }

@@ -65,7 +65,7 @@ public class UserController : ControllerBase
     [Authorize(Roles = Roles.User)]
     public async Task<ActionResult> DeleteUser(string username)
     {
-        string usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name);
+        string usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
         if (usernameClaim != username)
         {
             return Unauthorized();

@@ -45,8 +45,8 @@ public class ScheduledService : IScheduledService
         Scheduled scheduled = scheduledDto.ToScheduled();
         scheduled.Indicator = '-';
         var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
-        double sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.Month);
-        double sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.Month);
+        double sumIncome = await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate);
+        double sumExpense = await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate);
 
         if (scheduledDto.StartDate.Month == DateTime.Now.Month)
         {
@@ -56,11 +56,29 @@ public class ScheduledService : IScheduledService
             {
                 return Result.Failure<string>("There is not enough funds for this transaction");
             }
-            for (int i = scheduledDto.StartDate.Month + 1; i < scheduledDto.EndDate.Month; i++)
+            if (scheduledDto.EndDate.HasValue)
             {
-                if (await _scheduledRepository.GetAllScheduledIncomeForAMonth(i) < await _scheduledRepository.GetAllScheduledExpenseForAMonth(i) + scheduledDto.Amount)
+                var numberOfMonths = (scheduledDto.EndDate.Value.Year - scheduledDto.StartDate.Year) * 12 + scheduledDto.EndDate.Value.Month - scheduledDto.StartDate.Month;
+                if (scheduledDto.EndDate.Value.Day < scheduledDto.StartDate.Day)
                 {
-                    return Result.Failure<string>("There is not enough funds for this transaction");
+                    numberOfMonths--;
+                }
+                for (int i = 1; i <= numberOfMonths; i++)
+                {
+                    if (await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.AddMonths(i)) < await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.AddMonths(i)) + scheduledDto.Amount)
+                    {
+                        return Result.Failure<string>("There is not enough funds for this transaction");
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 1; i < 24; i++)
+                {
+                    if (await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.AddMonths(i)) < await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.AddMonths(i)) + scheduledDto.Amount)
+                    {
+                        return Result.Failure<string>("There is not enough funds for this transaction");
+                    }
                 }
             }
 
@@ -68,11 +86,29 @@ public class ScheduledService : IScheduledService
 
         if (scheduledDto.StartDate.Month != DateTime.Now.Month)
         {
-            for (int i = scheduledDto.StartDate.Month; i < scheduledDto.EndDate.Month; i++)
+            if (scheduledDto.EndDate != null)
             {
-                if (await _scheduledRepository.GetAllScheduledIncomeForAMonth(i) < await _scheduledRepository.GetAllScheduledExpenseForAMonth(i) + scheduledDto.Amount)
+                var numberOfMonths = (scheduledDto.EndDate.Value.Year - scheduledDto.StartDate.Year) * 12 + scheduledDto.EndDate.Value.Month - scheduledDto.StartDate.Month;
+                if (scheduledDto.EndDate.Value.Day < scheduledDto.StartDate.Day)
                 {
-                    return Result.Failure<string>("There is not enough funds for this transaction");
+                    numberOfMonths--;
+                }
+                for (int i = 1; i <= numberOfMonths; i++)
+                {
+                    if (await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.AddMonths(i)) < await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.AddMonths(i)) + scheduledDto.Amount)
+                    {
+                        return Result.Failure<string>("There is not enough funds for this transaction");
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 1; i <= 24; i++)
+                {
+                    if (await _scheduledRepository.GetAllScheduledIncomeForAMonth(scheduledDto.StartDate.AddMonths(i)) < await _scheduledRepository.GetAllScheduledExpenseForAMonth(scheduledDto.StartDate.AddMonths(i)) + scheduledDto.Amount)
+                    {
+                        return Result.Failure<string>("There is not enough funds for this transaction");
+                    }
                 }
             }
         }
