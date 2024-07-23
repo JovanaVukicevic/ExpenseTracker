@@ -3,37 +3,26 @@ using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace ExpenseTracker.Repository.Repository;
 public class SavingsAccountRepository : ISavingsAccountRepository
 {
-
     private readonly DataContext _context;
 
-    private readonly IUserRepository _userRepository;
-
-    private readonly IAccountRepository _accountRepository;
-
-    private readonly ILogger<SavingsAccountRepository> _logger;
-
-    public SavingsAccountRepository(DataContext context, IUserRepository userRepository, IAccountRepository accountRepository, ILogger<SavingsAccountRepository> logger)
+    public SavingsAccountRepository(DataContext context)
     {
         _context = context;
-        _userRepository = userRepository;
-        _accountRepository = accountRepository;
-        _logger = logger;
     }
-    public async Task<bool> CreateSAccount(SavingsAccount sa)
+    public async Task<bool> CreateSAccount(SavingsAccount savingsAccount)
     {
-        await _context.SavingsAccounts.AddAsync(sa);
+        await _context.SavingsAccounts.AddAsync(savingsAccount);
         await _context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DeleteSavingsAccount(SavingsAccount sa)
+    public async Task<bool> DeleteSavingsAccount(SavingsAccount savingsAccount)
     {
-        _context.SavingsAccounts.Remove(sa);
+        _context.SavingsAccounts.Remove(savingsAccount);
         await _context.SaveChangesAsync();
         return true;
     }
@@ -57,13 +46,10 @@ public class SavingsAccountRepository : ISavingsAccountRepository
         .FirstOrDefaultAsync();
     }
 
-    public async Task<bool> UpdateSavingsAccount(SavingsAccount sa)
+    public async Task<bool> UpdateSavingsAccount(SavingsAccount savingsAccount)
     {
-
-        _context.SavingsAccounts.Update(sa);
+        _context.SavingsAccounts.Update(savingsAccount);
         await _context.SaveChangesAsync();
         return true;
     }
-
-
 }

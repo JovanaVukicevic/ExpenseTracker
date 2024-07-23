@@ -1,7 +1,6 @@
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
-using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.Interfaces;
@@ -17,7 +16,6 @@ public class SavingsAccountServiceTests
     private readonly Mock<ISavingsAccountRepository> _mockSavingsAccountRepository = new();
     private readonly Mock<IScheduledService> _mockScheduledService = new();
     private readonly SavingsAccountService savingsAccountService;
-
 
     public SavingsAccountServiceTests()
     {
@@ -58,7 +56,6 @@ public class SavingsAccountServiceTests
 
         //Assert
         Assert.True(result);
-
     }
 
     [Fact]
@@ -84,7 +81,6 @@ public class SavingsAccountServiceTests
 
         //Assert
         Assert.IsType<Result<SavingsAccountDto, string>>(result);
-
     }
 
     [Fact]
@@ -126,7 +122,6 @@ public class SavingsAccountServiceTests
         {
             Name = "lalala"
         };
-
         _mockSavingsAccountRepository.Setup(service => service.GetSAccountByID(1)).Returns(Task.FromResult(savingsAccount));
 
         //Act
@@ -134,7 +129,6 @@ public class SavingsAccountServiceTests
 
         //Assert
         Assert.Equal(savingsAccount, result);
-
     }
 
     [Fact]

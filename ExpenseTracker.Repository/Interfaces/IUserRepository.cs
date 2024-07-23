@@ -21,5 +21,4 @@ public interface IUserRepository
     public Task<bool> UserExists(string username);
 
     public Task<List<User>> GetAllPremiumUsers();
-
 }

@@ -4,7 +4,6 @@ using CSharpFunctionalExtensions;
 
 namespace ExpenseTracker.Service.Interfaces
 {
-
     public interface IScheduledService
     {
         public Task<List<ScheduledDto>> GetAllScheduledTransactionsAsync();
@@ -24,7 +23,5 @@ namespace ExpenseTracker.Service.Interfaces
 
         public Task<double> GetSumOfIncomesForAMonth(int accountId);
         public Task<double> GetSumOfExpensesForAMonth(int accountId);
-
-
     }
 }

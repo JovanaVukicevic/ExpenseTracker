@@ -1,3 +1,4 @@
+using ExpenseTracker.Repository.Constants;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.Interfaces;
 using iTextSharp.text;
@@ -48,12 +49,12 @@ public class ReportingService
 
             SortTransactionsToExpenseOrIncome(ListOfTransactions, incomeTransactions, expenseTransactions);
             SortScheduledTransactions(ListOfScheduledTransactions, scheduledIncomeTransactions, scheduledExpenseTransactions);
-            var maxLengthTransactions = Math.Max(incomeTransactions.Count(), expenseTransactions.Count());
-            var maxLengthScheduled = Math.Max(scheduledExpenseTransactions.Count(), scheduledIncomeTransactions.Count());
+            var maxLengthTransactions = Math.Max(incomeTransactions.Count, expenseTransactions.Count);
+            var maxLengthScheduled = Math.Max(scheduledExpenseTransactions.Count, scheduledIncomeTransactions.Count);
             var maxLength = Math.Max(maxLengthScheduled, maxLengthTransactions);
             for (int i = 0; i < maxLength; i++)
             {
-                if (i < incomeTransactions.Count())
+                if (i < incomeTransactions.Count)
                 {
                     table.AddCell(GetCell(incomeTransactions[i].Name + " Amount: " + incomeTransactions[i].Amount, font));
                 }
@@ -104,7 +105,7 @@ public class ReportingService
     {
         foreach (var scheduledTransaction in ListOfScheduledTransactions)
         {
-            if (scheduledTransaction.Indicator == '+')
+            if (scheduledTransaction.Indicator == IndicatorIds.Income)
             {
                 scheduledIncomeTransactions.Add(scheduledTransaction);
             }
@@ -120,7 +121,7 @@ public class ReportingService
     {
         foreach (var transaction in ListOfTransactions)
         {
-            if (transaction.Indicator == '+')
+            if (transaction.Indicator == IndicatorIds.Income)
             {
                 incomeTransactions.Add(transaction);
             }

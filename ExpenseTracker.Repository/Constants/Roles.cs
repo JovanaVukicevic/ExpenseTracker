@@ -1,5 +1,4 @@
 namespace ExpenseTracker.Repository.Constants
-
 {
     public static class Roles
     {
@@ -7,7 +6,6 @@ namespace ExpenseTracker.Repository.Constants
         public const string Premium = nameof(Premium);
         public const string User = nameof(User);
     }
-
     public static class RoleIds
     {
         public const string Admin = "0";

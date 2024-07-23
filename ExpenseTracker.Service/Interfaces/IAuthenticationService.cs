@@ -3,7 +3,6 @@ using ExpenseTracker.Service.Dto;
 
 namespace ExpenseTracker.Service.Interfaces
 {
-
     public interface IAuthenticationService
     {
         Task<Result<UserDto, IEnumerable<string>>> RegisterUser(UserDto user);

@@ -29,7 +29,19 @@ public static class UserExtension
             Password = user.PasswordHash,
             IsPremuium = user.IsPremuium
         };
-
         return userDto;
+    }
+
+    public static UserPublicDisplay ToPublic(this User user)
+    {
+        var userPublic = new UserPublicDisplay()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Username = user.UserName,
+            IsPremuium = user.IsPremuium
+        };
+        return userPublic;
     }
 }

@@ -6,12 +6,10 @@ using ExpenseTracker.Service.Interfaces;
 public class EmailService : IEmailService
 {
     private readonly EmailSettings _emailSettings;
-
     public EmailService(IOptions<EmailSettings> emailSettings)
     {
         _emailSettings = emailSettings.Value;
     }
-
     public async Task SendEmailAsync(string toEmail, string subject, string message, byte[] attachmentBytes, string attachmentFileName)
     {
         try

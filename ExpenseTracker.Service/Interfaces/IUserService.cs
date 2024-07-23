@@ -7,11 +7,11 @@ namespace ExpenseTracker.Service.Interfaces
 
     public interface IUserService
     {
-        public Task<List<UserDto>> GetUsersAsync();
+        public Task<List<UserPublicDisplay>> GetUsersAsync();
 
         public Task<UserDto> GetUserByIDAsync(string userId);
 
-        public Task<Result> RegisterUserAsync(UserDto user);
+        public Task<Result> RegisterUserAsync(UserDto userDto);
 
         public Task<Result> DeleteUserAsync(string username);
         public Task<List<User>> GetAllPremiumUsersAsync();

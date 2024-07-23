@@ -6,9 +6,9 @@ namespace ExpenseTracker.Repository.Interfaces
     {
         Task<List<SavingsAccount>> GetAllSavingsAccounts();
         Task<SavingsAccount?> GetSAccountByID(int id);
-        Task<bool> CreateSAccount(SavingsAccount sa);
-        Task<bool> UpdateSavingsAccount(SavingsAccount sa);
-        Task<bool> DeleteSavingsAccount(SavingsAccount sa);
+        Task<bool> CreateSAccount(SavingsAccount savingsAccount);
+        Task<bool> UpdateSavingsAccount(SavingsAccount savingsAccount);
+        Task<bool> DeleteSavingsAccount(SavingsAccount savingsAccount);
         Task<SavingsAccount?> GetSAccountsOfAUser(string userId);
     }
 }

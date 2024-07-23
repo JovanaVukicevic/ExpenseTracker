@@ -4,15 +4,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.Dto;
-using System.Threading;
+using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.CustomException;
+using ExpenseTracker.Repository.Constants;
 
 
 namespace ExpenseTracker.Service.Services;
 
 public class SchedulingTransactionService : IHostedService, IDisposable
 {
-
     private Timer _timer;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SchedulingTransactionService> _logger;
@@ -51,37 +51,44 @@ public class SchedulingTransactionService : IHostedService, IDisposable
             var _emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
             var _userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-            var scheduledTransactions = await scheduledService.GetAllScheduledBeforeDateAsync(DateTime.Now) ?? throw new NotFoundException("Schedules not found");
-            List<Repository.Models.Transaction> transactions = [];
+            var scheduledTransactions = await scheduledService.GetAllScheduledBeforeDateAsync(DateTime.Now);
+
+            List<Transaction> transactions = [];
             foreach (var scheduledTransaction in scheduledTransactions)
             {
                 var transaction = scheduledTransaction.ToTransaction();
                 var transactionDto = transaction.ToDto();
-                var account = await _accountService.GetAccountByID(transaction.AccountID) ?? throw new NotFoundException("Account not found");
-                var user = await _userService.GetUserByIDAsync(account.UserId) ?? throw new NotFoundException("User not found");
-                var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID) ?? throw new NotFoundException("Account not found");
-                if (transaction.Indicator == '+')
+                var account = await _accountService.GetAccountByID(transaction.AccountID)
+                    ?? throw new NotFoundException("Account not found");
+                UserDto userDto = await _userService.GetUserByIDAsync(account.UserId)
+                    ?? throw new NotFoundException("User not found");
+                var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID)
+                    ?? throw new NotFoundException("Account not found");
+                if (transaction.Indicator == IndicatorIds.Income)
                 {
-                    await _transactionService.CreateIncomeAsync(transactionDto, user.Username);
+                    await _transactionService.CreateIncomeAsync(transactionDto, userDto.Username);
                 }
                 else
                 {
-                    await _transactionService.CreateExpenseAsync(transactionDto, user.Username);
-                    if (_transactionService.IsASavingsTransaction(transactionDto))
+                    await _transactionService.CreateExpenseAsync(transactionDto, userDto.Username);
+                    if (transaction.CategoryName == SavingsCategories.Savings)
                     {
                         savingsAccount.Balance += transactionDto.Amount;
                         if (savingsAccount.Balance == savingsAccount.TargetAmount)
                         {
-                            await _emailService.SendEmailBudgetCapAsync(user.Email, "Reaching savings goal", "You have reached your savings goal. Savings will be transfered to your account");
+                            await _emailService.SendEmailBudgetCapAsync(
+                                userDto.Email,
+                                "Reaching savings goal",
+                                "You have reached your savings goal. Savings will be transfered to your account");
                             var savingsTransferDto = new TransactionDto
                             {
                                 Date = transactionDto.Date,
                                 Name = transaction.Name,
-                                CategoryName = "SavingsGoal",
+                                CategoryName = SavingsCategories.SavingsGoal,
                                 Amount = savingsAccount.TargetAmount,
                                 AccountID = transactionDto.AccountID,
                             };
-                            await _transactionService.CreateIncomeAsync(savingsTransferDto, user.Username);
+                            await _transactionService.CreateIncomeAsync(savingsTransferDto, userDto.Username);
                             savingsAccount.Balance = 0;
                             savingsAccount.AmountPerMonth = 0;
                             savingsAccount.TargetAmount = 0;

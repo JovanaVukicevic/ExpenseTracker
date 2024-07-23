@@ -22,5 +22,4 @@ public class Account
     public List<Scheduled> ScheduledTransactions { get; set; } = [];
 
     public List<Transaction> Transactions { get; set; } = [];
-
 }

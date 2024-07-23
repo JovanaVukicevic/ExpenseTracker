@@ -7,16 +7,15 @@ using Microsoft.EntityFrameworkCore;
 namespace ExpenseTracker.Repository.Repository;
 public class CategoryRepository : ICategoryRepository
 {
-
     private readonly DataContext _context;
 
     public CategoryRepository(DataContext context)
     {
         _context = context;
     }
-    public async Task<bool> CreateCategory(Category c)
+    public async Task<bool> CreateCategory(Category category)
     {
-        await _context.Categories.AddAsync(c);
+        await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
         return true;
     }
@@ -33,7 +32,9 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category?> GetCategoryByNameAndUserId(string name, string userId)
     {
-        return await _context.Categories.Where(c => c.Name == name && c.UserId == userId).FirstOrDefaultAsync();
+        return await _context.Categories
+        .Where(c => c.Name == name && c.UserId == userId)
+        .FirstOrDefaultAsync();
     }
 
     public async Task<bool> UpdateCategory(Category category)

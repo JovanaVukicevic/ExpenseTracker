@@ -5,8 +5,6 @@ using ExpenseTracker.Service.Dto;
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.CustomException;
-using Org.BouncyCastle.Bcpg;
-
 
 namespace ExpenseTracker.Service.Services;
 
@@ -22,11 +20,13 @@ public class CategoryService : ICategoryService
 
     public async Task<Result> CreateCategoryAsync(CategoryDto categoryDto, string username)
     {
+        var user = await _userRepository.GetUserByUsername(username)
+             ?? throw new NotFoundException("User not found");
+
         Category category = categoryDto.ToCategory();
-        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
         category.UserId = user.Id;
-        var result = await _categoryRepository.CreateCategory(category);
-        if (!result)
+        var isCategoryCreated = await _categoryRepository.CreateCategory(category);
+        if (!isCategoryCreated)
         {
             return Result.Failure<string>("Something went wrong while saving a category!");
         }
@@ -34,20 +34,22 @@ public class CategoryService : ICategoryService
     }
     public async Task<List<Category>> GetAllCategoriesAsync()
     {
-        var result = await _categoryRepository.GetAllCategories() ?? throw new NotFoundException("Categories not found");
-        return result;
+        return await _categoryRepository.GetAllCategories();
     }
 
     public async Task<Category> GetCategoryByName(string name)
     {
-        var result = await _categoryRepository.GetCategoryByName(name) ?? throw new NotFoundException("Categories not found");
+        var result = await _categoryRepository.GetCategoryByName(name)
+             ?? throw new NotFoundException("Categories not found");
         return result;
     }
 
     public async Task<bool> UpdateCategory(CategoryDto categoryDto, string username)
     {
-        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
-        var category = await _categoryRepository.GetCategoryByName(categoryDto.Name) ?? throw new NotFoundException("Category not found");
+        var user = await _userRepository.GetUserByUsername(username)
+             ?? throw new NotFoundException("User not found");
+        var category = await _categoryRepository.GetCategoryByName(categoryDto.Name)
+             ?? throw new NotFoundException("Category not found");
         if (user.Id != category.UserId)
         {
             return false;

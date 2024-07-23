@@ -1,30 +1,23 @@
-namespace ExpenseTracker.Repository.Models;
+using System.ComponentModel.DataAnnotations;
 
-public class Scheduled
+namespace ExpenseTracker.Service.Dto;
+
+public class UserPublicDisplay
 {
-    public int ID { get; set; }
-
-    public int AccountID { get; set; }
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public Account Account { get; set; }
+    public string FirstName { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    public DateTime StartDate { get; set; }
-
-    public DateTime? EndDate { get; set; }
-
-    public int TimeIntervalInDays { get; set; }
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public string Name { get; set; }
+    public string LastName { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    public double Amount { get; set; }
-
-    public char Indicator { get; set; }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    public string Email { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    public string CategoryName { get; set; }
+    public string Username { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    public Boolean IsPremuium { get; set; }
 }

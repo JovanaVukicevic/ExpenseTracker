@@ -2,28 +2,27 @@ using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using ExpenseTracker.Repository.Constants;
 
 namespace ExpenseTracker.Repository.Repository;
 public class TransactionRepository : ITransactionRepository
 {
-
     private readonly DataContext _context;
 
     public TransactionRepository(DataContext context)
     {
         _context = context;
     }
-    public async Task<bool> CreateTransaction(Transaction t)
+    public async Task<bool> CreateTransaction(Transaction transaction)
     {
-        await _context.Transactions.AddAsync(t);
+        await _context.Transactions.AddAsync(transaction);
         await _context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DeleteTransaction(Transaction t)
+    public async Task<bool> DeleteTransaction(Transaction transaction)
     {
-        _context.Transactions.Remove(t);
+        _context.Transactions.Remove(transaction);
         await _context.SaveChangesAsync();
         return true;
     }
@@ -40,9 +39,9 @@ public class TransactionRepository : ITransactionRepository
         .FirstOrDefaultAsync();
     }
 
-    public async Task<List<Transaction>> GetTransactionsOfAType(char c)
+    public async Task<List<Transaction>> GetTransactionsOfAType(char indicator)
     {
-        return await _context.Transactions.Where(t => t.Indicator == c).ToListAsync();
+        return await _context.Transactions.Where(t => t.Indicator == indicator).ToListAsync();
     }
     public async Task<bool> UpdateTransaction(Transaction t)
     {
@@ -54,38 +53,42 @@ public class TransactionRepository : ITransactionRepository
     public async Task<List<Transaction>> GetAllTransactionsOfAnAccount(int accountId)
     {
         return await _context.Transactions
-        .Where(t => t.AccountID == accountId && t.Date.Month == DateTime.Now.Month)
+        .Where(t => t.AccountID == accountId &&
+             t.Date.Month == DateTime.UtcNow.Month)
         .ToListAsync();
     }
 
-    public async Task<double> GetAllExpenseOfACategory(int month, string name)
+    public async Task<double> SumOfExpensesInAMonthOfACategory(int month, string name)
     {
         return await _context.Transactions
-        .Where(t => t.Indicator == '-' && t.Date.Month == month && t.CategoryName == name)
+        .Where(t => t.Indicator == IndicatorIds.Expense &&
+             t.Date.Month == month &&
+             t.CategoryName == name)
         .SumAsync(t => t.Amount);
     }
 
     public async Task<double> GetSumOfExpensesForAMonth(int accountId)
     {
         return await _context.Transactions
-        .Where(t => t.Indicator == '-' && t.Date.Month == DateTime.Now.Month)
+        .Where(t => t.Indicator == IndicatorIds.Expense &&
+             t.Date.Month == DateTime.UtcNow.Month)
         .SumAsync(t => t.Amount);
     }
 
     public async Task<double> GetSumOfIncomesForAMonth(int accoundId)
     {
         return await _context.Transactions
-        .Where(t => t.Indicator == '+' && t.Date.Month == DateTime.Now.Month)
+        .Where(t => t.Indicator == IndicatorIds.Income &&
+             t.Date.Month == DateTime.UtcNow.Month)
         .SumAsync(t => t.Amount);
     }
 
-    // public async 
     public async Task<List<Transaction>> GetTransactionsOfAccount(int accountId)
     {
         return await _context.Transactions.Where(t => t.AccountID == accountId).ToListAsync();
     }
 
-    public async Task<PaginatedList<Transaction>> GetTransactionsByFilter(int pageIndex, int pageSize, List<int?> accountId, char? indicator, string? category, DateTime? from, DateTime? to)
+    public async Task<PaginatedList<Transaction>> GetTransactionsByFilter(int pageIndex, int pageSize, List<int> accountId, char? indicator, string? category, DateTime? from, DateTime? to)
     {
         var query = _context.Transactions
                     .Include(t => t.Account)

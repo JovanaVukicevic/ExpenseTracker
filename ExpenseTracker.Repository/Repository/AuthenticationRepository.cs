@@ -10,11 +10,9 @@ public class AuthenticationRepository : IAuthenticationRepository
 
     private readonly UserManager<User> _userManager;
 
-
     public AuthenticationRepository(UserManager<User> userManager)
     {
         _userManager = userManager;
-
     }
 
     public async Task<IdentityResult> AssignPremiumRoleAsync(User user)

@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using System.Security.Principal;
 using ExpenseTracker.Repository.Models;
+
 namespace ExpenseTracker.Tests;
+
 public class UserControllerTests
 {
     [Fact]
@@ -17,7 +18,7 @@ public class UserControllerTests
     {
         //Arrange
         var mockUserService = new Mock<IUserService>();
-        mockUserService.Setup(service => service.GetUsersAsync()).Returns(Task.FromResult(new List<UserDto>()));
+        mockUserService.Setup(service => service.GetUsersAsync()).Returns(Task.FromResult(new List<UserPublicDisplay>()));
 
         var mockAuthenticationService = new Mock<IAuthenticationService>();
         //Act
@@ -118,8 +119,10 @@ public class UserControllerTests
         var mockAuthenticationService = new Mock<IAuthenticationService>();
         mockAuthenticationService.Setup(service => service.Login(mockLoginUser)).Returns(Task.FromResult(Result.Success<IEnumerable<string>>(["Sdsdsdsdsss"])));
         var userController = new UserController(mockAuthenticationService.Object, mockUserService.Object);
+
         //Act
         var actionResult = await userController.Login(mockLoginUser);
+
         //Assert
         Assert.IsType<OkObjectResult>(actionResult);
         var result = actionResult as OkObjectResult;

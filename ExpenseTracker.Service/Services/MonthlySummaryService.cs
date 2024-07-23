@@ -8,8 +8,7 @@ namespace ExpenseTracker.Service.Services;
 
 public class MonthlySummaryService : IHostedService, IDisposable
 {
-
-    private Timer _timer;
+    private Timer? _timer;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SchedulingTransactionService> _logger;
     public MonthlySummaryService(ILogger<SchedulingTransactionService> logger, IServiceProvider serviceProvider)
@@ -41,7 +40,7 @@ public class MonthlySummaryService : IHostedService, IDisposable
         return Task.CompletedTask;
     }
 
-    private void ExecuteTask(object state)
+    private void ExecuteTask(object? state)
     {
         SendMonthlySummary();
     }

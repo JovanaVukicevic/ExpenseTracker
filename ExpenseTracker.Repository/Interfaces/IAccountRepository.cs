@@ -1,5 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using ExpenseTracker.Repository.Models;
+﻿using ExpenseTracker.Repository.Models;
 
 namespace ExpenseTracker.Repository.Interfaces
 {
@@ -8,13 +7,11 @@ namespace ExpenseTracker.Repository.Interfaces
         Task<List<Account>> GetAllAccounts();
         Task<Account?> GetAccountByID(int id);
         Task<List<Account>> GetAllAccountsOfAUser(string id);
-        Task<List<Transaction>> GetTransactionsOfATypeOfAccount(int accountId, char c);
+        Task<List<Transaction>> GetTransactionsOfATypeOfAccount(int accountId, char indicator);
         Task<Account?> GetAccountByUserIdAndName(string userId, string name);
         Task<bool> AccountExistsId(int id);
-        Task<bool> UpdateAccount(Account a);
-        Task<bool> DeleteAccount(Account a);
-        Task<bool> AddAccount(Account a);
-
-
+        Task<bool> UpdateAccount(Account account);
+        Task<bool> DeleteAccount(Account account);
+        Task<bool> AddAccount(Account account);
     }
 }

@@ -26,7 +26,6 @@ public static class TransactionExtension
             Date = transaction.Date,
             Name = transaction.Name,
             Amount = transaction.Amount,
-            //Indicator = transaction.Indicator,
             CategoryName = transaction.CategoryName
         };
         return transactionDto;

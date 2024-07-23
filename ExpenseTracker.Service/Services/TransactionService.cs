@@ -5,18 +5,16 @@ using ExpenseTracker.Repository.Interfaces;
 using CSharpFunctionalExtensions;
 using ExpenseTracker.Service.Extensions;
 using ExpenseTracker.Service.CustomException;
+using ExpenseTracker.Repository.Constants;
 
 namespace ExpenseTracker.Service.Services;
 
 public class TransactionService : ITransactionService
 {
-
     private readonly ITransactionRepository _transactionRepository;
     private readonly IAccountRepository _accountRepository;
-
     private readonly ICategoryRepository _categoryRepository;
     private readonly IUserRepository _userRepository;
-
     private readonly EmailService _emailService;
 
     public TransactionService(ITransactionRepository transactionRepository, IUserRepository userRepository, EmailService emailService, IAccountRepository accountRepository, ICategoryRepository categoryRepository)
@@ -47,33 +45,47 @@ public class TransactionService : ITransactionService
     public async Task<Result> CreateIncomeAsync(TransactionDto transactionDto, string username)
     {
         Transaction transaction = transactionDto.ToTransaction();
-        transaction.Indicator = '+';
-        transaction.Date = DateTime.Now;
-        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
-        var account = await _accountRepository.GetAccountByID(transactionDto.AccountID) ?? throw new NotFoundException("Account not found");
-        var category = await _categoryRepository.GetCategoryByNameAndUserId(transaction.CategoryName, user.Id) ?? throw new NotFoundException("Category not found");
+        transaction.Indicator = IndicatorIds.Income;
+        transaction.Date = DateTime.UtcNow;
+
+        var user = await _userRepository.GetUserByUsername(username)
+            ?? throw new NotFoundException("User not found");
+        var account = await _accountRepository.GetAccountByID(transactionDto.AccountID)
+            ?? throw new NotFoundException("Account not found");
+        _ = await _categoryRepository.GetCategoryByNameAndUserId(transaction.CategoryName, user.Id)
+            ?? throw new NotFoundException("Category not found");
         var result = await _transactionRepository.CreateTransaction(transaction);
 
         if (!result)
         {
-            return Result.Failure<string>("Something went wrong while saving an income!");
+            return Result.Failure("Something went wrong while saving an income!");
         }
         account.Balance += transactionDto.Amount;
-        var result1 = await _accountRepository.UpdateAccount(account);
-        return Result.Success<string>("Income is saved");
+        bool isAccountUpdated = await _accountRepository.UpdateAccount(account);
 
-
+        if (isAccountUpdated)
+        {
+            return Result.Success("Income is saved");
+        }
+        else
+        {
+            return Result.Failure("Income could not be saved.");
+        }
     }
 
     public async Task<Result> CreateExpenseAsync(TransactionDto transactionDto, string username)
     {
         Transaction transaction = transactionDto.ToTransaction();
-        transaction.Indicator = '-';
-        transaction.Date = DateTime.Now;
-        var user = await _userRepository.GetUserByUsername(username) ?? throw new NotFoundException("User not found");
-        double? sumExpense = await _transactionRepository.GetAllExpenseOfACategory(transaction.Date.Month, transaction.CategoryName);
-        var category = await _categoryRepository.GetCategoryByNameAndUserId(transaction.CategoryName, user.Id) ?? throw new NotFoundException("Category not found");
-        var account = await _accountRepository.GetAccountByID(transactionDto.AccountID) ?? throw new NotFoundException("Account not found");
+        transaction.Indicator = IndicatorIds.Expense;
+        transaction.Date = DateTime.UtcNow;
+
+        var user = await _userRepository.GetUserByUsername(username)
+             ?? throw new NotFoundException("User not found");
+        double? sumExpense = await _transactionRepository.SumOfExpensesInAMonthOfACategory(transaction.Date.Month, transaction.CategoryName);
+        var category = await _categoryRepository.GetCategoryByNameAndUserId(transaction.CategoryName, user.Id)
+             ?? throw new NotFoundException("Category not found");
+        var account = await _accountRepository.GetAccountByID(transactionDto.AccountID)
+             ?? throw new NotFoundException("Account not found");
 
         if (sumExpense + transaction.Amount > category.BudgetCap && category.BudgetCap != 0)
         {
@@ -85,27 +97,37 @@ public class TransactionService : ITransactionService
         {
             return Result.Failure<string>("There's not enough funds on your account");
         }
-        var result = await _transactionRepository.CreateTransaction(transaction);
-        if (!result)
+
+        var isTransactionCreated = await _transactionRepository.CreateTransaction(transaction);
+        if (!isTransactionCreated)
         {
             return Result.Failure<string>("Something went wrong while saving an expense!");
         }
 
         account.Balance -= transactionDto.Amount;
-        var result1 = await _accountRepository.UpdateAccount(account);
-        return Result.Success<string>("Expense is saved");
+        bool isAccountUpdated = await _accountRepository.UpdateAccount(account);
+
+        if (isAccountUpdated)
+        {
+            return Result.Success("Expense is saved");
+        }
+        else
+        {
+            return Result.Failure("Expense could not be saved.");
+        }
     }
 
     public async Task<Result> DeleteTransaction(int id)
     {
-        var trans = await _transactionRepository.GetTransactionByID(id) ?? throw new NotFoundException("Transaction not found");
-        var result = await _transactionRepository.DeleteTransaction(trans);
-        if (!result)
+        var transaction = await _transactionRepository.GetTransactionByID(id)
+            ?? throw new NotFoundException("Transaction not found");
+
+        var isTransactionDeleted = await _transactionRepository.DeleteTransaction(transaction);
+        if (!isTransactionDeleted)
         {
             return Result.Failure<string>("Something went wrong while deleting a transaction!");
         }
         return Result.Success<string>("Transaction is succesfully deleted");
-
     }
 
     public async Task<double> GetSumOfIncomesForAMonth(int accountId)
@@ -118,43 +140,25 @@ public class TransactionService : ITransactionService
         return await _transactionRepository.GetSumOfExpensesForAMonth(accountId);
     }
 
-    public bool IsASavingsTransaction(TransactionDto transactionDto)
-    {
-        if (transactionDto.CategoryName == "Savings")
-        {
-            return true;
-        }
-        return false;
-    }
-
     public async Task<PaginatedList<TransactionDto>> GetTransactionsByFiltersAsync(string userId, int? accountId, char? indicator, string? category, DateTime? from, DateTime? to)
     {
         if (accountId == null)
         {
-            List<Account> listOfAccounts = await _accountRepository.GetAllAccountsOfAUser(userId);
-            List<int?> listOfIndex = [];
-            foreach (Account account in listOfAccounts)
+            List<Account> accounts = await _accountRepository.GetAllAccountsOfAUser(userId);
+            List<int> accountIds = [];
+            foreach (Account account in accounts)
             {
-                listOfIndex.Add(account.ID);
+                accountIds.Add(account.ID);
             }
-            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, listOfIndex, indicator, category, from, to);
-            List<TransactionDto> listOfDtos = [];
-            foreach (Transaction transaction in result.Items)
-            {
-                listOfDtos.Add(transaction.ToDto());
-            }
+            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, accountIds, indicator, category, from, to);
+            List<TransactionDto> listOfDtos = result.Items.Select(t => t.ToDto()).ToList();
+
             return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
         }
         else
         {
-            List<int?> listOfIndex = [];
-            listOfIndex.Add(accountId);
-            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, listOfIndex, indicator, category, from, to);
-            List<TransactionDto> listOfDtos = [];
-            foreach (Transaction transaction in result.Items)
-            {
-                listOfDtos.Add(transaction.ToDto());
-            }
+            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, [(int)accountId], indicator, category, from, to);
+            List<TransactionDto> listOfDtos = result.Items.Select(t => t.ToDto()).ToList();
             return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
         }
     }

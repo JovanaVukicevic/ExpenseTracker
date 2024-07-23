@@ -6,13 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Repository.Data;
 
-
 public class DataContext : IdentityDbContext<User>
 {
      public DataContext(DbContextOptions<DataContext> options) : base(options)
      {
      }
-
      public DbSet<Account> Accounts { get; set; }
 
      public DbSet<SavingsAccount> SavingsAccounts { get; set; }
@@ -99,7 +97,6 @@ public class DataContext : IdentityDbContext<User>
           user4.PasswordHash = passwordHasher.HashPassword(user4, "passworD4!");
           user5.PasswordHash = passwordHasher.HashPassword(user5, "passworD5!");
           builder.Entity<User>().HasData(user1, user2, user3, user4, user5);
-
 
           builder.Entity<IdentityRole>().HasData(
               new IdentityRole<string> { Id = RoleIds.Admin, Name = Constants.Roles.Admin },

@@ -37,7 +37,7 @@ public static class ScheduledExtension
 
     public static Transaction ToTransaction(this Scheduled scheduledTransaction)
     {
-        var transaction = new Repository.Models.Transaction
+        var transaction = new Transaction
         {
             Date = scheduledTransaction.StartDate,
             Name = scheduledTransaction.Name,
@@ -45,7 +45,6 @@ public static class ScheduledExtension
             Amount = scheduledTransaction.Amount,
             AccountID = scheduledTransaction.AccountID,
             Indicator = scheduledTransaction.Indicator
-
         };
         return transaction;
     }
