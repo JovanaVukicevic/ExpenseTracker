@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using ExpenseTracker.Repository.Constants;
-using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Service.Interfaces;
@@ -9,31 +8,34 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseTracker.API.Controllers;
 
-
 [ApiController]
 [Route("api/[controller]s")]
 [ServiceFilter(typeof(CustomExceptionFilter))]
 public class TransactionController : ControllerBase
 {
-    private readonly ITransactionService _transService;
+    private readonly ITransactionService _transactionService;
     private readonly IUserService _userService;
-
     public TransactionController(ITransactionService transactionService, IUserService userService)
     {
-        _transService = transactionService;
+        _transactionService = transactionService;
         _userService = userService;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [Authorize(Roles = Roles.User)]
-    public async Task<IActionResult> GetTransactionsByFilters(int? accountId, char? indicator, string? category, DateTime? from, DateTime? until)
+    public async Task<IActionResult> GetTransactionsByFilters(
+        [FromQuery] int? accountId,
+        char? indicator,
+        string? category,
+        DateTime? from,
+        DateTime? until)
     {
-        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name)
+            ?? throw new NotFoundException("User not found");
         var user = await _userService.GetUserByUsernameAsync(usernameClaim);
-        var result = await _transService.GetTransactionsByFiltersAsync(user.Id, accountId, indicator, category, from, until);
+        var result = await _transactionService.GetTransactionsByFiltersAsync(user.Id, accountId, indicator, category, from, until);
         return Ok(result);
     }
 
@@ -42,10 +44,11 @@ public class TransactionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
-    public async Task<ActionResult> CreateIncome(TransactionDto transDto)
+    public async Task<ActionResult> CreateIncome(TransactionDto transactionDto)
     {
-        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
-        var result = await _transService.CreateIncomeAsync(transDto, usernameClaim);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name)
+             ?? throw new NotFoundException("User not found");
+        var result = await _transactionService.CreateIncomeAsync(transactionDto, usernameClaim);
         if (result.IsFailure)
         {
             return Unauthorized(result.Error);
@@ -58,16 +61,16 @@ public class TransactionController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
-    public async Task<ActionResult> CreateExpense(TransactionDto transDto)
+    public async Task<ActionResult> CreateExpense(TransactionDto transactionDto)
     {
-        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
-        var result = await _transService.CreateExpenseAsync(transDto, usernameClaim);
+        var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name)
+             ?? throw new NotFoundException("User not found");
+        var result = await _transactionService.CreateExpenseAsync(transactionDto, usernameClaim);
         if (result.IsFailure)
         {
             return Unauthorized(result.Error);
         }
         return NoContent();
-
     }
 
     [HttpDelete]
@@ -77,14 +80,11 @@ public class TransactionController : ControllerBase
     [Authorize]
     public async Task<ActionResult> DeleteTransaction(int id)
     {
-        var result = await _transService.DeleteTransaction(id);
+        var result = await _transactionService.DeleteTransaction(id);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);
         }
         return NoContent();
-
     }
-
-
 }

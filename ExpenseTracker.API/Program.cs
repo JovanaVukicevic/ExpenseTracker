@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json.Serialization;
 using ExpenseTracker.Repository.Data;
 using ExpenseTracker.Repository.Interfaces;
 using ExpenseTracker.Repository.Models;
@@ -58,6 +57,10 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 5;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = true;
 
 }).AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();

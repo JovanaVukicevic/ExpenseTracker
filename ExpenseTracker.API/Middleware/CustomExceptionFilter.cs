@@ -1,7 +1,6 @@
 using ExpenseTracker.Service.CustomException;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 
 public class CustomExceptionFilter : IExceptionFilter
 {
@@ -14,7 +13,6 @@ public class CustomExceptionFilter : IExceptionFilter
 
     public void OnException(ExceptionContext context)
     {
-        _logger.LogError($"An unhandled exception occurred: {context.Exception}");
         if (context.Exception is NotFoundException)
         {
             context.Result = new NotFoundObjectResult(
@@ -35,6 +33,7 @@ public class CustomExceptionFilter : IExceptionFilter
         }
         else
         {
+            _logger.LogError($"An unhandled exception occurred: {context.Exception}");
             context.Result = new ObjectResult(
                 new
                 {
@@ -43,14 +42,5 @@ public class CustomExceptionFilter : IExceptionFilter
                 }
             );
         }
-        // var result = new ObjectResult(new
-        // {
-        //     StatusCode = 500,
-        //     Message = "An error occurred while processing your request.",
-        //     Detail = context.Exception.Message
-        // });
-
-        // result.StatusCode = 500;
-        // context.Result = result;
     }
 }

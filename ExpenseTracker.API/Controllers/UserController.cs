@@ -12,22 +12,21 @@ namespace ExpenseTracker.API.Controllers;
 [Route("api/[controller]s")]
 public class UserController : ControllerBase
 {
+    private readonly IUserService _userService;
+    private readonly IAuthenticationService _authenticationService;
 
-    private readonly ExpenseTracker.Service.Interfaces.IUserService _userService;
-    private readonly ExpenseTracker.Service.Interfaces.IAuthenticationService _authService;
-
-    public UserController(IAuthenticationService authService, IUserService userService)
+    public UserController(IAuthenticationService authenticationService, IUserService userService)
     {
-        _authService = authService;
+        _authenticationService = authenticationService;
         _userService = userService;
     }
+
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<List<UserDto>> GetAllUsers()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult> GetAllUsers()
     {
         var result = await _userService.GetUsersAsync();
-        return result;
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -57,6 +56,7 @@ public class UserController : ControllerBase
         }
         return NoContent();
     }
+
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,23 +65,23 @@ public class UserController : ControllerBase
     [Authorize(Roles = Roles.User)]
     public async Task<ActionResult> DeleteUser(string username)
     {
-        string usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name) ?? throw new NotFoundException("User not found");
+        string usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name)
+             ?? throw new NotFoundException("User not found");
         if (usernameClaim != username)
         {
             return Unauthorized();
         }
-
         var result = await _userService.DeleteUserAsync(username);
         if (result.IsFailure)
         {
             return BadRequest("Bad request");
         }
         return NoContent();
-
     }
+
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ServiceFilter(typeof(CustomExceptionFilter))]
     public async Task<ActionResult> Login(LoginUserDto loginUser)
@@ -90,13 +90,11 @@ public class UserController : ControllerBase
         {
             return BadRequest();
         }
-        var result = await _authService.Login(loginUser);
+        var result = await _authenticationService.Login(loginUser);
         if (result.IsFailure)
         {
             return Unauthorized();
         }
         return Ok(result.Value);
-
     }
-
 }
