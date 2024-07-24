@@ -39,7 +39,7 @@ public class TransactionController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("Income")]
+    [HttpPost("Incomes")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -56,7 +56,7 @@ public class TransactionController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("Expense")]
+    [HttpPost("Expenses")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

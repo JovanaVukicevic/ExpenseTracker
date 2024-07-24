@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExpenseTracker.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/Schedules")]
 [ServiceFilter(typeof(CustomExceptionFilter))]
 public class ScheduledController : ControllerBase
 {
@@ -26,7 +26,7 @@ public class ScheduledController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("Income")]
+    [HttpPost("Incomes")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,7 +43,7 @@ public class ScheduledController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("Expense")]
+    [HttpPost("Expenses")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [Authorize]
