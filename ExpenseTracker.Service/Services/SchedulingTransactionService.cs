@@ -7,6 +7,8 @@ using ExpenseTracker.Service.Dto;
 using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Service.CustomException;
 using ExpenseTracker.Repository.Constants;
+using Microsoft.AspNetCore.SignalR;
+using ExpenseTracker.Service.Notifications;
 
 
 namespace ExpenseTracker.Service.Services;
@@ -31,7 +33,7 @@ public class SchedulingTransactionService : IHostedService, IDisposable
     {
         _logger.LogInformation("Scheduled Transaction Service is starting.");
 
-        _timer.Change(TimeSpan.Zero, TimeSpan.FromMinutes(5));
+        _timer.Change(TimeSpan.Zero, TimeSpan.FromMinutes(2));
         return Task.CompletedTask;
     }
 
@@ -50,6 +52,10 @@ public class SchedulingTransactionService : IHostedService, IDisposable
             var _savingsAccountService = scope.ServiceProvider.GetRequiredService<ISavingsAccountService>();
             var _emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
             var _userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+            var _notificationHubContext = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHub>>();
+            var _notificationHub = scope.ServiceProvider.GetRequiredService<NotificationHub>();
+            var _connectionManager = scope.ServiceProvider.GetRequiredService<IConnectionManager>();
+
 
             var scheduledTransactions = await scheduledService.GetAllScheduledBeforeDateAsync(DateTime.Now);
 
@@ -62,17 +68,27 @@ public class SchedulingTransactionService : IHostedService, IDisposable
                     ?? throw new NotFoundException("Account not found");
                 UserDto userDto = await _userService.GetUserByIDAsync(account.UserId)
                     ?? throw new NotFoundException("User not found");
-                var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID)
-                    ?? throw new NotFoundException("Account not found");
                 if (transaction.Indicator == IndicatorIds.Income)
                 {
                     await _transactionService.CreateIncomeAsync(transactionDto, userDto.Username);
+                    _connectionManager.AddConnection(userDto.Username, "1");
+                    var connections = _connectionManager.GetConnections(userDto.Username);
+                    if (connections != null && connections.Count > 0)
+                    {
+                        foreach (var connectionId in connections)
+                        {
+                            _logger.LogInformation("Sending notification");
+                            await _notificationHubContext.Clients.User(userDto.Username).SendAsync("ReceiveNotification", $"Transaction {transaction.Name} is due for execution.");
+                        }
+                    }
                 }
                 else
                 {
                     await _transactionService.CreateExpenseAsync(transactionDto, userDto.Username);
                     if (transaction.CategoryName == SavingsCategories.Savings)
                     {
+                        var savingsAccount = await _savingsAccountService.GetSavingsAccountByID(account.SavingsAccountID)
+                                ?? throw new NotFoundException("Account not found");
                         savingsAccount.Balance += transactionDto.Amount;
                         if (savingsAccount.Balance == savingsAccount.TargetAmount)
                         {

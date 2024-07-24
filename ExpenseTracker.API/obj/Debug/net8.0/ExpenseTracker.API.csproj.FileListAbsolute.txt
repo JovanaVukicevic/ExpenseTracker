@@ -163,3 +163,6 @@ C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug
 C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\System.Reflection.MetadataLoadContext.dll
 C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\Castle.Core.dll
 C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\Moq.dll
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\package-lock.json
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\package.json
+C:\Users\jovana.vukicevic\Desktop\ExpenseTrackerApp\ExpenseTracker.API\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll

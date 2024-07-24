@@ -5,16 +5,28 @@ using ExpenseTracker.Repository.Models;
 using ExpenseTracker.Repository.Repository;
 using ExpenseTracker.Service.EmailConfiguration;
 using ExpenseTracker.Service.Interfaces;
+using ExpenseTracker.Service.Notifications;
 using ExpenseTracker.Service.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.WithOrigins("http://localhost:5271") // Your client origin
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -39,7 +51,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("ExpenseTracker.API"));
@@ -90,6 +103,9 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<CustomExceptionFilter>();
 builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
+builder.Services.AddSingleton<NotificationHub>();
+
 
 
 
@@ -134,6 +150,11 @@ if (app.Environment.IsDevelopment())
     });
     app.UseDeveloperExceptionPage();
 }
+app.UseCors("CorsPolicy");
+
+app.UseStaticFiles();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.UseMiddleware<ExceptionMiddleware>();
 

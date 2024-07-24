@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SignalR Notification</title>
+</head>
+
+<body>
+    <h2>Scheduled Transaction Notifications</h2>
+    <div id="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.5/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        connection.on("ReceiveNotification", (message) => {
+            const notificationsDiv = document.getElementById("notifications");
+            notificationsDiv.innerHTML += `<p>${message}</p>`;
+        });
+
+        connection.start().catch(err => console.error(err));
+    </script>
+</body>
+
+</html>

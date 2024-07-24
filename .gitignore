@@ -1,0 +1,4 @@
+# Ignore bin and obj folders
+[Bb]in/
+[Oo]bj/
+[Nn]ode_modules/
