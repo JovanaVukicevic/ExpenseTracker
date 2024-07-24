@@ -157,6 +157,13 @@ public class TransactionService : ITransactionService
         }
         else
         {
+            var chechkUserAccount = await _accountRepository.GetAccountByID((int)accountId)
+                ?? throw new NotFoundException("Account not found");
+            if (chechkUserAccount.UserId != userId)
+            {
+                return new PaginatedList<TransactionDto>([], 0, 0);
+            }
+
             var result = await _transactionRepository.GetTransactionsByFilter(1, 10, [(int)accountId], indicator, category, from, to);
             List<TransactionDto> listOfDtos = result.Items.Select(t => t.ToDto()).ToList();
             return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
