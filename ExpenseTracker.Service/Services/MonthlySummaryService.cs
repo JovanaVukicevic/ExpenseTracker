@@ -37,6 +37,7 @@ public class MonthlySummaryService : IHostedService, IDisposable
         {
             _timer.Change(timeUntilNextExecution, Timeout.InfiniteTimeSpan);
         }
+
         return Task.CompletedTask;
     }
 
@@ -71,6 +72,7 @@ public class MonthlySummaryService : IHostedService, IDisposable
     {
         _logger.LogInformation("Monthly Report Service is stopping.");
         _timer?.Change(Timeout.Infinite, 0);
+
         return Task.CompletedTask;
     }
 }

@@ -30,6 +30,7 @@ public class CategoryService : ICategoryService
         {
             return Result.Failure<string>("Something went wrong while saving a category!");
         }
+
         return Result.Success<string>("Category is saved");
     }
     public async Task<List<Category>> GetAllCategoriesAsync()
@@ -39,9 +40,8 @@ public class CategoryService : ICategoryService
 
     public async Task<Category> GetCategoryByName(string name)
     {
-        var result = await _categoryRepository.GetCategoryByName(name)
+        return await _categoryRepository.GetCategoryByName(name)
              ?? throw new NotFoundException("Categories not found");
-        return result;
     }
 
     public async Task<bool> UpdateCategory(CategoryDto categoryDto, string username)
@@ -54,6 +54,7 @@ public class CategoryService : ICategoryService
         {
             return false;
         }
+
         return await _categoryRepository.UpdateCategory(categoryDto.ToCategory());
     }
 }

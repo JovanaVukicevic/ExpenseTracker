@@ -21,7 +21,6 @@ public class AuthenticationService : IAuthenticationService
     public readonly SignInManager<User> _signInManager;
     private readonly IConfiguration _config;
     private readonly UserManager<User> _userManager;
-
     public AuthenticationService(IUserRepository userRepository, UserManager<User> userManager, IConfiguration config, SignInManager<User> signInManager, IAuthenticationRepository authenticationRepository)
     {
         _userRepository = userRepository;
@@ -57,6 +56,7 @@ public class AuthenticationService : IAuthenticationService
             signingCredentials: signingCred
             );
         string tokenString = new JwtSecurityTokenHandler().WriteToken(securityToken);
+
         return tokenString;
     }
 
@@ -75,8 +75,8 @@ public class AuthenticationService : IAuthenticationService
             string tokenString = await GenerateTokenString(loginUserDto);
             return Result.Success<IEnumerable<string>>(new List<string> { tokenString });
         }
-        return Result.Failure<IEnumerable<string>>("Login attempt was unsuccessful. Please try again!");
 
+        return Result.Failure<IEnumerable<string>>("Login attempt was unsuccessful. Please try again!");
     }
 
     public async Task<Result<UserDto, IEnumerable<string>>> RegisterUser(UserDto userDto)
@@ -94,6 +94,7 @@ public class AuthenticationService : IAuthenticationService
         {
             return Result.Failure<UserDto, IEnumerable<string>>(resultUser.Errors.Select(e => e.Description));
         }
+
         return Result.Success<UserDto, IEnumerable<string>>(userDto);
     }
 }

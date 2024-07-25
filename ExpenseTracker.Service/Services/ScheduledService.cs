@@ -41,6 +41,7 @@ public class ScheduledService : IScheduledService
         {
             return Result.Failure<string>("Something went wrong while saving a scheduled income!");
         }
+
         return Result.Success<string>("Scheduled income is saved");
     }
 
@@ -138,6 +139,7 @@ public class ScheduledService : IScheduledService
         {
             return Result.Failure<string>("Something went wrong while saving a scheduled expense!");
         }
+
         return Result.Success<string>("Scheduled expense is saved");
     }
 
@@ -153,6 +155,7 @@ public class ScheduledService : IScheduledService
         {
             return Result.Failure<string>("Something went wrong while updating a scheduled transaction!");
         }
+
         return Result.Success<string>("Scheduled transaction is updated");
     }
 
@@ -178,8 +181,8 @@ public class ScheduledService : IScheduledService
         {
             return Result.Failure<string>("Something went wrong while deleting a scheduled transaction!");
         }
-        return Result.Success<string>("Scheduled transaction is succesfully deleted");
 
+        return Result.Success<string>("Scheduled transaction is succesfully deleted");
     }
 
     public async Task<List<Scheduled>> GetAllScheduledBeforeDateAsync(DateTime date)

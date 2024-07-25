@@ -71,16 +71,8 @@ public class SchedulingTransactionService : IHostedService, IDisposable
                 if (transaction.Indicator == IndicatorIds.Income)
                 {
                     await _transactionService.CreateIncomeAsync(transactionDto, userDto.Username);
-                    _connectionManager.AddConnection(userDto.Username, "1");
-                    var connections = _connectionManager.GetConnections(userDto.Username);
-                    if (connections != null && connections.Count > 0)
-                    {
-                        foreach (var connectionId in connections)
-                        {
-                            _logger.LogInformation("Sending notification");
-                            await _notificationHubContext.Clients.User(userDto.Username).SendAsync("ReceiveNotification", $"Transaction {transaction.Name} is due for execution.");
-                        }
-                    }
+                    _logger.LogInformation("Sending notification");
+                    await _notificationHubContext.Clients.All.SendAsync("ReceiveNotification", "PLS");
                 }
                 else
                 {
@@ -132,6 +124,7 @@ public class SchedulingTransactionService : IHostedService, IDisposable
     {
         _logger.LogInformation("Scheduled Transaction Service is stopping.");
         _timer?.Change(Timeout.Infinite, 0);
+
         return Task.CompletedTask;
     }
 }

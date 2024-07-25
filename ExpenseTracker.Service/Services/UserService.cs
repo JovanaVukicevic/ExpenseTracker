@@ -12,8 +12,8 @@ namespace ExpenseTracker.Service.Services;
 
 public class UserService : IUserService
 {
-    public readonly IUserRepository _userRepository;
-    public readonly IAuthenticationService _authenticationService;
+    private readonly IUserRepository _userRepository;
+    private readonly IAuthenticationService _authenticationService;
     private readonly IMemoryCache _cache;
     private readonly ILogger<UserService> _logger;
     private readonly IAccountService _accountService;
@@ -34,6 +34,7 @@ public class UserService : IUserService
         {
             usersPublic.Add(user.ToPublic());
         }
+
         return usersPublic;
     }
 
@@ -53,6 +54,7 @@ public class UserService : IUserService
             result = user.ToDto();
             _cache.Set(cacheKey, result, cacheEntryOptions);
         }
+
         return result
             ?? throw new NotFoundException($"User with ID {userId} not found.");
     }
@@ -82,6 +84,7 @@ public class UserService : IUserService
         {
             return Result.Failure<string>("Something went wrong while creating default account");
         }
+
         return Result.Success<string>("Registration was succesfull!");
     }
 
@@ -100,8 +103,8 @@ public class UserService : IUserService
         {
             return Result.Failure<string>("Something went wrong while deleting a user");
         }
-        return Result.Success<string>("User is deleted!");
 
+        return Result.Success<string>("User is deleted!");
     }
 
     public async Task<List<User>> GetAllPremiumUsersAsync()
@@ -111,8 +114,7 @@ public class UserService : IUserService
 
     public async Task<User> GetUserByUsernameAsync(string username)
     {
-        var result = await _userRepository.GetUserByUsername(username)
+        return await _userRepository.GetUserByUsername(username)
             ?? throw new NotFoundException($"User with username {username} was not found.");
-        return result;
     }
 }

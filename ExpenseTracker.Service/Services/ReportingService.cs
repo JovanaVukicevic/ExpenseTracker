@@ -97,6 +97,7 @@ public class ReportingService
 
             document.Close();
             writer.Close();
+
             return ms.ToArray();
         }
     }
@@ -116,7 +117,6 @@ public class ReportingService
         }
     }
 
-
     private static void SortTransactionsToExpenseOrIncome(List<Transaction> ListOfTransactions, List<Transaction> incomeTransactions, List<Transaction> expenseTransactions)
     {
         foreach (var transaction in ListOfTransactions)
@@ -131,7 +131,6 @@ public class ReportingService
             }
         }
     }
-
 
     private PdfPCell GetCell(string text, Font font, bool isHeader = false)
     {
@@ -148,6 +147,7 @@ public class ReportingService
             cell.VerticalAlignment = Element.ALIGN_MIDDLE;
         }
         cell.Padding = 5;
+
         return cell;
     }
 }

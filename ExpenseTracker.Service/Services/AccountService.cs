@@ -35,6 +35,7 @@ public class AccountService : IAccountService
         {
             return Result.Failure<AccountDto, string>("Something went wrong during saving the account.");
         }
+
         return Result.Success<AccountDto, string>(accountDto);
     }
 
@@ -50,6 +51,7 @@ public class AccountService : IAccountService
 
             _cache.Set(cacheKey, result, cacheEntryOptions);
         }
+
         return result ?? throw new NotFoundException("Account not found");
     }
 

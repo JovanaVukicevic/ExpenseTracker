@@ -34,6 +34,7 @@ public class TransactionService : ITransactionService
         {
             transactionsDto.Add(transaction.ToDto());
         }
+
         return transactionsDto;
     }
 
@@ -127,6 +128,7 @@ public class TransactionService : ITransactionService
         {
             return Result.Failure<string>("Something went wrong while deleting a transaction!");
         }
+
         return Result.Success<string>("Transaction is succesfully deleted");
     }
 

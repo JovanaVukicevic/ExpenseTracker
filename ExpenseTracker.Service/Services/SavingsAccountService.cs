@@ -62,6 +62,7 @@ public class SavingsAccountService : ISavingsAccountService
         }
 
         await _accountRepository.UpdateAccount(account);
+
         return Result.Success<SavingsAccountDto, string>(savingsAccountDto);
     }
 
@@ -125,6 +126,7 @@ public class SavingsAccountService : ISavingsAccountService
         {
             return false;
         }
+
         return true;
     }
 }

@@ -3,7 +3,7 @@ namespace ExpenseTracker.Service.Notifications;
 
 public class ConnectionManager : IConnectionManager
 {
-    private static Dictionary<string, HashSet<string>> userMap = new Dictionary<string, HashSet<string>>();
+    private static Dictionary<string, string> userMap = new Dictionary<string, string>();
     public IEnumerable<string> OnlineUsers { get { return userMap.Keys; } }
     public void AddConnection(string username, string connectionId)
     {
@@ -11,15 +11,15 @@ public class ConnectionManager : IConnectionManager
         {
             if (!userMap.ContainsKey(username))
             {
-                userMap[username] = new HashSet<string>();
+                userMap[username] = "";
             }
-            userMap[username].Add(connectionId);
+            userMap[username] = connectionId;
         }
     }
 
-    public HashSet<string> GetConnections(string username)
+    public string GetConnections(string username)
     {
-        var connections = new HashSet<string>();
+        var connections = "";
         try
         {
             lock (userMap)
@@ -45,7 +45,7 @@ public class ConnectionManager : IConnectionManager
                 {
                     if (userMap[username].Contains(connectionId))
                     {
-                        userMap[username].Remove(connectionId);
+                        userMap[username] = "";
                         break;
                     }
                 }
