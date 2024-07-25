@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SignalR Notification</title>
+</head>
+
+<body>
+    <h2>Scheduled Transaction Notifications</h2>
+    <div id="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.12/signalr.min.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub", { accessTokenFactory: () => { return localStorage.getItem("token"); } })
+            .build();
+
+        connection.start().then(() => {
+            console.log("connected");
+        }).catch(err => console.error(err));
+
+        connection.on("ReceiveNotification", function (username, message) {
+            alert("Notification: " + message)
+        });
+
+    </script>
+</body>
+
+</html>

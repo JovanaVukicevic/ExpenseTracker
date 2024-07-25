@@ -17,16 +17,11 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
-builder.Services.AddCors(options =>
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
-    options.AddPolicy("CorsPolicy", builder =>
-    {
-        builder.WithOrigins("http://localhost:5271") // Your client origin
-               .AllowAnyHeader()
-               .AllowAnyMethod()
-               .AllowCredentials();
-    });
-});
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -150,7 +145,7 @@ if (app.Environment.IsDevelopment())
     });
     app.UseDeveloperExceptionPage();
 }
-app.UseCors("CorsPolicy");
+app.UseCors("corsapp");
 
 app.UseStaticFiles();
 
