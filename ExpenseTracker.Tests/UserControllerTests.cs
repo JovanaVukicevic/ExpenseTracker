@@ -28,6 +28,7 @@ public class UserControllerTests
         var users = await userController.GetAllUsers();
         Assert.NotNull(users);
     }
+
     [Fact]
     public async Task GetUserById_ReturnsUserDto()
     {

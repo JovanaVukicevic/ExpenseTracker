@@ -22,8 +22,8 @@ public class ScheduledController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetAllScheduledTransactions()
     {
-        var result = await _scheduledService.GetAllScheduledTransactionsAsync();
-        return Ok(result);
+        var allSchedules = await _scheduledService.GetAllScheduledTransactionsAsync();
+        return Ok(allSchedules);
     }
 
     [HttpPost("Incomes")]

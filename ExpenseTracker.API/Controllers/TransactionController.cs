@@ -35,8 +35,8 @@ public class TransactionController : ControllerBase
         var usernameClaim = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new NotFoundException("User not found");
         var user = await _userService.GetUserByUsernameAsync(usernameClaim);
-        var result = await _transactionService.GetTransactionsByFiltersAsync(user.Id, accountId, indicator, category, from, until);
-        return Ok(result);
+        var filteredTransactions = await _transactionService.GetTransactionsByFiltersAsync(user.Id, accountId, indicator, category, from, until);
+        return Ok(filteredTransactions);
     }
 
     [HttpPost("Incomes")]

@@ -21,8 +21,8 @@ public class CategoryController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetAllCategories()
     {
-        var result = await _categoryService.GetAllCategoriesAsync();
-        return Ok(result);
+        var allCategories = await _categoryService.GetAllCategoriesAsync();
+        return Ok(allCategories);
     }
 
     [HttpPost]
@@ -34,10 +34,10 @@ public class CategoryController : ControllerBase
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new Exception("Could not get Name claim");
-        var result = await _categoryService.CreateCategoryAsync(category, username);
-        if (result.IsFailure)
+        var categoryIsCreated = await _categoryService.CreateCategoryAsync(category, username);
+        if (categoryIsCreated.IsFailure)
         {
-            return BadRequest(result.Error);
+            return BadRequest(categoryIsCreated.Error);
         }
         return NoContent();
     }
@@ -52,8 +52,8 @@ public class CategoryController : ControllerBase
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new Exception("Could not get Name claim");
-        var result = await _categoryService.UpdateCategory(category, username);
-        if (!result)
+        var categoryIsUpdated = await _categoryService.UpdateCategory(category, username);
+        if (!categoryIsUpdated)
         {
             return Unauthorized();
         }

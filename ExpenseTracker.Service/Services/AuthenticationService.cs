@@ -62,8 +62,8 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<Result<IEnumerable<string>>> Login(LoginUserDto loginUserDto)
     {
-        var exist = await _userRepository.GetUserByUsername(loginUserDto.Username);
-        if (exist == null)
+        var user = await _userRepository.GetUserByUsername(loginUserDto.Username);
+        if (user == null)
         {
             return Result.Failure<IEnumerable<string>>($"There is no user with : {loginUserDto.Username} username.");
         }

@@ -22,8 +22,8 @@ public class SavingsAccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetAllSavingsAccounts()
     {
-        var result = await _savingsService.GetAllSAAsync();
-        return Ok(result);
+        var allSavingsAccounts = await _savingsService.GetAllSAAsync();
+        return Ok(allSavingsAccounts);
     }
 
     [HttpPost("Plan")]
@@ -42,12 +42,12 @@ public class SavingsAccountController : ControllerBase
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new Exception("Could not get Name claim");
-        var result = await _savingsService.CreateSavingsAccount(savingsAccount, username, accountName);
-        if (result.IsFailure)
+        var savingsAccountIsCreated = await _savingsService.CreateSavingsAccount(savingsAccount, username, accountName);
+        if (savingsAccountIsCreated.IsFailure)
         {
-            return Unauthorized(result.Error);
+            return Unauthorized(savingsAccountIsCreated.Error);
         }
-        return Ok(result.Value);
+        return Ok(savingsAccountIsCreated.Value);
     }
 
     [HttpDelete]
@@ -58,11 +58,11 @@ public class SavingsAccountController : ControllerBase
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new Exception("Could not get Name claim");
-        var result = await _savingsService.RemoveSAccount(username);
-        if (result.IsFailure)
+        var savingsAccountDeleted = await _savingsService.RemoveSAccount(username);
+        if (savingsAccountDeleted.IsFailure)
         {
-            return Unauthorized(result.Error);
+            return Unauthorized(savingsAccountDeleted.Error);
         }
-        return Ok(result.Value);
+        return Ok(savingsAccountDeleted.Value);
     }
 }

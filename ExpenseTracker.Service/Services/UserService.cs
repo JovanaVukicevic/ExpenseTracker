@@ -61,19 +61,14 @@ public class UserService : IUserService
 
     public async Task<Result> RegisterUserAsync(UserDto userDto)
     {
-        if (userDto == null)
-        {
-            return Result.Failure<string>("Error while registering a user");
-        }
-
-        var exist = await _userRepository.GetUserByUsername(userDto.Username);
-        if (exist != null && exist.UserName == userDto.Username)
+        var user = await _userRepository.GetUserByUsername(userDto.Username);
+        if (user != null && user.UserName == userDto.Username)
         {
             return Result.Failure<string>("Username is already taken");
         }
 
-        var result = await _authenticationService.RegisterUser(userDto);
-        if (!result.IsSuccess)
+        var registeredUser = await _authenticationService.RegisterUser(userDto);
+        if (!registeredUser.IsSuccess)
         {
             return Result.Failure<string>("Error while registering a user");
         }
@@ -98,8 +93,8 @@ public class UserService : IUserService
         var user = await _userRepository.GetUserByUsername(username)
             ?? throw new NotFoundException("User not found");
 
-        var result = await _userRepository.DeleteUser(user);
-        if (result != true)
+        var userIsDeleted = await _userRepository.DeleteUser(user);
+        if (userIsDeleted != true)
         {
             return Result.Failure<string>("Something went wrong while deleting a user");
         }

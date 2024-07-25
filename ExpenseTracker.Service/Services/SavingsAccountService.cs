@@ -121,8 +121,8 @@ public class SavingsAccountService : ISavingsAccountService
         await _accountRepository.UpdateAccount(account);
         User user = await _userRepository.GetUserById(userId)
              ?? throw new NotFoundException("User not found");
-        var result = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto(), user.UserName);
-        if (result.IsFailure)
+        var isScheduledExpenseCreated = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto(), user.UserName);
+        if (isScheduledExpenseCreated.IsFailure)
         {
             return false;
         }

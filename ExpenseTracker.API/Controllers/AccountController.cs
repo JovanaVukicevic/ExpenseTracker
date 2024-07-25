@@ -25,8 +25,8 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetAllAccounts()
     {
-        var result = await _accountRepository.GetAllAccounts();
-        return Ok(result);
+        var allAccounts = await _accountRepository.GetAllAccounts();
+        return Ok(allAccounts);
     }
 
     [HttpPost]
@@ -37,10 +37,10 @@ public class AccountController : ControllerBase
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new Exception("Could not get Name claim");
-        var result = await _accountService.CreateAccount(acc, username);
-        if (result.IsFailure)
+        var accountIsCreated = await _accountService.CreateAccount(acc, username);
+        if (accountIsCreated.IsFailure)
         {
-            return BadRequest(result.Error);
+            return BadRequest(accountIsCreated.Error);
         }
         return NoContent();
     }
@@ -53,10 +53,10 @@ public class AccountController : ControllerBase
     {
         var username = HttpContext.User.FindFirstValue(ClaimTypes.Name)
             ?? throw new Exception("Could not get Name claim");
-        var result = await _accountService.RemoveAccount(name, username);
-        if (result.IsFailure)
+        var accountIsDeleted = await _accountService.RemoveAccount(name, username);
+        if (accountIsDeleted.IsFailure)
         {
-            return NotFound(result.Error);
+            return NotFound(accountIsDeleted.Error);
         }
         return NoContent();
     }

@@ -24,9 +24,9 @@ public class SavingsAccountServiceTests
             _mockUserRepository.Object,
             _mockAccountRepository.Object,
             _mockSavingsAccountRepository.Object
-
         );
     }
+
     [Fact]
     public async Task GetAllSavingsAccounts_ReturnsTaskListSavingsAccount()
     {

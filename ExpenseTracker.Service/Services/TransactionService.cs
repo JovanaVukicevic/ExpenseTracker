@@ -152,10 +152,10 @@ public class TransactionService : ITransactionService
             {
                 accountIds.Add(account.ID);
             }
-            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, accountIds, indicator, category, from, to);
-            List<TransactionDto> listOfDtos = result.Items.Select(t => t.ToDto()).ToList();
+            var filteredTransactions = await _transactionRepository.GetTransactionsByFilter(1, 10, accountIds, indicator, category, from, to);
+            List<TransactionDto> listOfDtos = filteredTransactions.Items.Select(t => t.ToDto()).ToList();
 
-            return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
+            return new PaginatedList<TransactionDto>(listOfDtos, filteredTransactions.PageIndex, filteredTransactions.TotalPages);
         }
         else
         {
@@ -166,9 +166,9 @@ public class TransactionService : ITransactionService
                 return new PaginatedList<TransactionDto>([], 0, 0);
             }
 
-            var result = await _transactionRepository.GetTransactionsByFilter(1, 10, [(int)accountId], indicator, category, from, to);
-            List<TransactionDto> listOfDtos = result.Items.Select(t => t.ToDto()).ToList();
-            return new PaginatedList<TransactionDto>(listOfDtos, result.PageIndex, result.TotalPages);
+            var filteredTransactions = await _transactionRepository.GetTransactionsByFilter(1, 10, [(int)accountId], indicator, category, from, to);
+            List<TransactionDto> listOfDtos = filteredTransactions.Items.Select(t => t.ToDto()).ToList();
+            return new PaginatedList<TransactionDto>(listOfDtos, filteredTransactions.PageIndex, filteredTransactions.TotalPages);
         }
     }
 }
