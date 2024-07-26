@@ -63,7 +63,9 @@ public class MonthlySummaryService : IHostedService, IDisposable
                 foreach (Account account in usersAccounts)
                 {
                     var file = await _reportingService.GeneratePdfAsync(account.ID);
+#pragma warning disable CS8604 // Possible null reference argument.
                     await _emailService.SendEmailAsync(user.Email, "Monthly Report", "Your monthly report", file, "Report.pdf");
+#pragma warning restore CS8604 // Possible null reference argument.
                 }
             }
         }

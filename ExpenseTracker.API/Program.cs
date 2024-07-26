@@ -17,10 +17,10 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
-builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
-{
-    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
+// builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+// {
+//     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+// }));
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -145,11 +145,11 @@ if (app.Environment.IsDevelopment())
     });
     app.UseDeveloperExceptionPage();
 }
-app.UseCors("corsapp");
+// app.UseCors("corsapp");
 
 app.UseStaticFiles();
 
-app.MapHub<NotificationHub>("/notificationHub");
+app.MapHub<NotificationHub>("/notifications");
 
 app.UseMiddleware<ExceptionMiddleware>();
 

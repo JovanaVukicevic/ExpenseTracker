@@ -121,7 +121,9 @@ public class SavingsAccountService : ISavingsAccountService
         await _accountRepository.UpdateAccount(account);
         User user = await _userRepository.GetUserById(userId)
              ?? throw new NotFoundException("User not found");
+#pragma warning disable CS8604 // Possible null reference argument.
         var isScheduledExpenseCreated = await _scheduledService.CreateScheduledExpenseAsync(scheduledSavingsTransaction.ToDto(), user.UserName);
+#pragma warning restore CS8604 // Possible null reference argument.
         if (isScheduledExpenseCreated.IsFailure)
         {
             return false;

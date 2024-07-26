@@ -32,7 +32,9 @@ public class ConnectionManager : IConnectionManager
             connections = null;
         }
 
+#pragma warning disable CS8603 // Possible null reference return.
         return connections;
+#pragma warning restore CS8603 // Possible null reference return.
     }
 
     public void RemoveConnection(string connectionId)
